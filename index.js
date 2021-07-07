@@ -32,6 +32,11 @@ cliente.on('message',(mensaje) => {
     let argumentos = contenido.slice(prefix.length).trim().split(' '); // se extreaen los argumentos
     let cual = argumentos.shift().toLocaleLowerCase(); //se extrae que comando es
     
+    //aqui se mira si es un mensaje en privado al bot
+    if(mensaje.channel.type !== "dm"){
+        mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
+    }
+
     if (!cliente.commands.has(cual)){
         mensaje.reply("No era un comando");
         return;
@@ -41,10 +46,6 @@ cliente.on('message',(mensaje) => {
 
     if(comando.soloServer && mensaje.channel.type === 'dm'){
         return mensaje.reply("Solo puedes usar este comando en un servidor, no en mensaje privado");
-    }
-    //aqui se mira si es un mensaje en privado al bot
-    if(mensaje.channel.type !== "dm"){
-        mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
     }
 
     if(comando.args && !argumentos.length){
