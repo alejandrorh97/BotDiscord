@@ -7,8 +7,8 @@ module.exports = {
     descripcion: "Tendria que mandar un msj a otro canal :v ",
 
 ejecutar (cliente,message,args){
-    
-    cliente.channels.cache.get(cliente.canales.get("pruebas")).send(args);
+    let texto = args.join(' ')
+    cliente.channels.cache.get(cliente.canales.get("pruebas")).send(texto);
     //console.log(cliente.canales.get("pruebas"));
  },
 };

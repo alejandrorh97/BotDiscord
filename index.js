@@ -29,7 +29,6 @@ cliente.on('ready',(estado)=>{
         }
     }
     cliente.canales = canales;
-    console.log(cliente.canales)
 });
 
 //este se ejecuta cuando se ha mandado un nuevo mensaje
