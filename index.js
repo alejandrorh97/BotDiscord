@@ -6,6 +6,7 @@ const fs = require('fs');
 //se crea los objetos necesarios
 const cliente = new Discord.Client();
 cliente.commands = new Discord.Collection();
+cliente.canales = new Map();
 
 //se cargan los comandos necesarios
 const comandos = fs.readdirSync("./commands").filter(file => file.endsWith('.js'));
@@ -21,6 +22,14 @@ cliente.on('ready',(estado)=>{
         status: 'online' })
     .then()
     .catch(console.error);
+    var canales = new Map();
+    for (var canal of cliente.channels.cache){
+        if(canal[1].type === 'text'){
+            canales.set(canal[1].name,canal[0]);
+        }
+    }
+    cliente.canales = canales;
+    console.log(cliente.canales)
 });
 
 //este se ejecuta cuando se ha mandado un nuevo mensaje
@@ -54,7 +63,7 @@ cliente.on('message',(mensaje) => {
 
 
     try{
-        comando.ejecutar(mensaje, argumentos);
+        comando.ejecutar(cliente,mensaje, argumentos);
     }
     catch(error){
         console.error(`hubo un error ${error}`);

@@ -1,10 +1,14 @@
-const {Client,MessageEmbed, TextChannel} = require('discord.js');
+
+const {MessageEmbed, TextChannel} = require('discord.js');
+
 
 module.exports = {
     nombre: "msj",
-    descripcion: "Tendria que mandar un msj a otro canal :v joer",
+    descripcion: "Tendria que mandar un msj a otro canal :v ",
 
 ejecutar (cliente,message,args){
-    TextChannel.name(pruebas)
+    
+    cliente.channels.cache.get(cliente.canales.get("pruebas")).send(args);
+    //console.log(cliente.canales.get("pruebas"));
  },
 };

@@ -7,7 +7,7 @@ module.exports = {
 	args: false,
 	soloServer: false,
 	usos: "[comando]",
-	ejecutar(mensaje, args) {
+	ejecutar(cliente,mensaje, args) {
 		let datos = [];
 		let { commands } = mensaje.client;
 		let embebido = new MessageEmbed();

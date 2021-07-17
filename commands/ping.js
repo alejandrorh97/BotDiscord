@@ -4,7 +4,7 @@ module.exports = {
     args: false,
     soloServer: false,
 	usos: "",
-	ejecutar(mensaje, args) {
+	ejecutar(cliente,mensaje, args) {
 		mensaje.channel.send('Pong.');
 	},
 };
