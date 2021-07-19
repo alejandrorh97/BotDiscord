@@ -7,6 +7,7 @@ const fs = require('fs');
 const cliente = new Discord.Client();
 cliente.commands = new Discord.Collection();
 cliente.canales = new Map();
+cliente.rolesitos = new Map();
 
 //se cargan los comandos necesarios
 const comandos = fs.readdirSync("./commands").filter(file => file.endsWith('.js'));
@@ -29,6 +30,12 @@ cliente.on('ready',(estado)=>{
         }
     }
     cliente.canales = canales;
+
+    //var rolesitos = [];
+    console.log(cliente.guilds.cache.get('860627511300587560').roles.cache) 
+    //for (var rol of cliente.guilds.cache){
+        
+    //}
 });
 
 //este se ejecuta cuando se ha mandado un nuevo mensaje
