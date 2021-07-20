@@ -10,3 +10,18 @@ module.exports = {
 
     }
 }
+
+ADMINS
+#protocoloparcial -materia fisica3 -ct 4 -cv 5 -c 4 -quienes ale ja
+#recordar -materia fisica3 -actividad [parcial, trabajo] -cuando 15/junio/2021 -descripcion
+    >como lanzar un evento en una fecha
+    >guardar los eventos en alguna BD
+#finciclo
+    quien hora fecha mensaje
+                     nombre del archivo
+
+CUALQUIERA
+#portada
+#sortear -cuantos 5 -decuantos 4 -quienes ale armando boina
+#verpasado -materia fisica3
+#versolucion -materia fisica3 -ejercicio
