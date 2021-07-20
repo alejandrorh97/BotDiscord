@@ -6,8 +6,6 @@ const fs = require('fs');
 //se crea los objetos necesarios
 const cliente = new Discord.Client();
 cliente.commands = new Discord.Collection();
-cliente.canales = new Map();
-cliente.rolesitos = new Map();
 
 //se cargan los comandos necesarios
 const comandos = fs.readdirSync("./commands").filter(file => file.endsWith('.js'));
@@ -23,19 +21,20 @@ cliente.on('ready',(estado)=>{
         status: 'online' })
     .then()
     .catch(console.error);
-    var canales = new Map();
+
+    //guardamos el nombre de los canales y sus ids
+    cliente.canales = new Map();
     for (var canal of cliente.channels.cache){
         if(canal[1].type === 'text'){
-            canales.set(canal[1].name,canal[0]);
+            cliente.canales.set(canal[1].name,canal[0]);
         }
     }
-    cliente.canales = canales;
 
-    //var rolesitos = [];
-    console.log(cliente.guilds.cache.get('860627511300587560').roles.cache) 
-    //for (var rol of cliente.guilds.cache){
-        
-    //}
+    cliente.rolsitos = new Map();
+    var roles = cliente.guilds.cache.get('860627511300587560').roles.cache;
+    for (var i of roles){
+        cliente.rolsitos.set(i[1].name, i[0]);
+    }
 });
 
 //este se ejecuta cuando se ha mandado un nuevo mensaje
@@ -75,6 +74,10 @@ cliente.on('message',(mensaje) => {
         console.error(`hubo un error ${error}`);
         mensaje.reply("Por alguna razon hubo un error ¯\_(ツ)_/¯");
     }
+});
+
+cliente.on('channelCreate', (evento) => {
+    
 });
 
 //aqui ya se conecta el bot a discord
