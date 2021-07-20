@@ -41,7 +41,14 @@ cliente.on('ready',(estado)=>{
 cliente.on('message',(mensaje) => {
 
     let contenido = mensaje.content;
-    if(!contenido.startsWith(prefix) || mensaje.author.bot) return; //si no es un comando se ignora
+    if(mensaje.author.bot) return;
+    if(!contenido.startsWith(prefix)){
+        //guardar el mensaje
+    }
+    else
+    {
+
+    }
 
     let argumentos = contenido.slice(prefix.length).trim().split(' '); // se extreaen los argumentos
     let cual = argumentos.shift().toLocaleLowerCase(); //se extrae que comando es

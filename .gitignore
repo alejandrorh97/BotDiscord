@@ -1,2 +1,5 @@
-node_modules/
+node_modules
 config.json
+prueba.js
+package-lock.json
+estructura.txt
