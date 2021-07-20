@@ -90,6 +90,9 @@ module.exports = {
 							throw new Error("No existia la categoria");
 						channel.setParent(category.id);
 					});
+			})
+			.catch(resultado => {
+				message.reply("Al parecer hubo un error");
 			});
         });
 	},
