@@ -3,8 +3,9 @@ const Discord = require("discord.js");
 const { prefix, token } = require("./config.json");
 const fs = require("fs");
 
+
 //se crea los objetos necesarios
-const cliente = new Discord.Client();
+const cliente = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 cliente.commands = new Discord.Collection();
 
 //se cargan los comandos necesarios
@@ -40,21 +41,31 @@ cliente.on("ready", (estado) => {
 	for (var i of roles) {
 		cliente.rolsitos.set(i[1].name, i[0]);
 	}
+
+	cliente.reacciones = new Map();
+	fs.readFile('reacciones.json', 'utf8', function readFileCallback(err, data){
+		if (err){
+			console.log(err);
+		} else {
+		let reacciones = JSON.parse(data); //now it an object
+		for (var i of reacciones.tabla){
+			var r = i.reaccion.split(" ");
+			cliente.reacciones.set(r[0], r[1]);
+		}
+	}});
 });
 
 //este se ejecuta cuando se ha mandado un nuevo mensaje
 cliente.on("message", (mensaje) => {
 	let contenido = mensaje.content;
 	if (mensaje.author.bot) return;
-	if (!contenido.startsWith(prefix)) {
-		//guardar el mensaje
-	} else {
+	if (contenido.startsWith(prefix)) {
 		let argumentos = contenido.slice(prefix.length).trim().split(" "); // se extreaen los argumentos
 		let cual = argumentos.shift().toLocaleLowerCase(); //se extrae que comando es
 
 		//aqui se mira si es un mensaje en privado al bot
 		if (mensaje.channel.type !== "dm") {
-			mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
+			//mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
 		}
 
 		if (!cliente.commands.has(cual)) {
@@ -85,7 +96,23 @@ cliente.on("message", (mensaje) => {
 	}
 });
 
-cliente.on("channelCreate", (evento) => {});
+cliente.on("channelCreate", (evento) => {
+	
+});
+
+cliente.on("messageReactionAdd", (reaccion, usuario) => {
+	var e = reaccion._emoji.name;
+	var quien = cliente.guilds.cache.get('860627511300587560').members.cache.get(usuario.id);
+	var rol = cliente.reacciones.get(e);
+	quien.roles.add(cliente.rolsitos.get(rol));
+});
+
+cliente.on("messageReactionRemove", (reaccion, usuario) => {
+	var e = reaccion._emoji.name;
+	var quien = cliente.guilds.cache.get('860627511300587560').members.cache.get(usuario.id);
+	var rol = cliente.reacciones.get(e);
+	quien.roles.remove(cliente.rolsitos.get(rol));
+});
 
 //aqui ya se conecta el bot a discord
 cliente.login(token);

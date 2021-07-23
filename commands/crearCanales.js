@@ -1,8 +1,11 @@
-const { Client, MessageEmbed } = require("discord.js");
+var fs = require("fs");
 
 module.exports = {
 	nombre: "crearmateria",
 	descripcion: "Crear la categoria, canales texto y voz",
+	args: true,
+	soloServer: true,
+	usos: "-n [nombre de la materia] -r [rol para la materia] -e [emoji para la reaccion]",
 	ejecutar(cliente, message, args) {
 		//ver si puede solo admins
 		var perms = message.member.hasPermission("ADMINISTRATOR");
@@ -14,6 +17,7 @@ module.exports = {
 		//sacamos los parametros
 		var nombre = [];
 		var rol = [];
+		var emoji = [];
 		var cual = "";
 		for (var i = 0; i < args.length; i++) {
 			if (args[i].startsWith("-")) {
@@ -27,73 +31,118 @@ module.exports = {
 				case "-r":
 					rol.push(args[i]);
 					break;
+				case "-e":
+					emoji.push(args[i]);
+					break;
 			}
 		}
 		var concatenado = nombre.join(" ");
 		//asignamos los roles
-        var promesas = []
+		var promesas = [];
 		var roles = [];
 		for (var i of rol) {
-            var cuak = cliente.rolsitos.get(i);
-			if (cuak) {
+			var cual = cliente.rolsitos.get(i);
+			if (cual) {
 				roles.push({ id: cliente.rolsitos.get(i) });
 			} else {
-                //se manda a crear los roles
-				promesas.push(message.guild.roles
-					.create({
-						data: {
-							name: i,
-						}
-					})
-					.then((respuesta) => {
-						cliente.rolsitos.set(
-							respuesta["name"],
-							respuesta["id"]
-						);
-						roles.push({ id: respuesta["id"] });
-					}));
+				//se manda a crear los roles
+				promesas.push(
+					message.guild.roles
+						.create({
+							data: {
+								name: i,
+							},
+						})
+						.then((respuesta) => {
+							cliente.rolsitos.set(
+								respuesta["name"],
+								respuesta["id"]
+							);
+							roles.push({ id: respuesta["id"] });
+						})
+				);
 			}
 		}
 		//creo la categoria
-		Promise.all(promesas).then(respuesta =>{
-            message.guild.channels
-			.create(concatenado, {
-				type: "category",
-				permissionOverwrites: roles,
-			})
-			.then((respuesta) => {
-				//creo el canal de texto
-				message.guild.channels
-					.create("texto " + concatenado, {
-						type: "text",
-						permissionOverwrites: roles,
-					})
-					.then((channel) => {
-						let category = cliente.channels.cache.find(
-							(c) => c.name == concatenado && c.type == "category"
-						);
+		Promise.all(promesas).then((respuesta) => {
+			message.guild.channels
+				.create(concatenado, {
+					type: "category",
+					permissionOverwrites: roles,
+				})
+				.then((respuesta) => {
+					//creo el canal de texto
+					message.guild.channels
+						.create("u texto " + concatenado, {
+							type: "text",
+							permissionOverwrites: roles,
+						})
+						.then((channel) => {
+							let category = cliente.channels.cache.find(
+								(c) =>
+									c.name == concatenado &&
+									c.type == "category"
+							);
 
-						if (!category)
-							throw new Error("No existia la categoria");
-						channel.setParent(category.id);
-					});
-				message.guild.channels
-					.create("voz " + concatenado, {
-						type: "voice",
-						permissionOverwrites: roles,
-					})
-					.then((channel) => {
-						let category = cliente.channels.cache.find(
-							(c) => c.name == concatenado && c.type == "category"
-						);
-						if (!category)
-							throw new Error("No existia la categoria");
-						channel.setParent(category.id);
-					});
-			})
-			.catch(resultado => {
-				message.reply("Al parecer hubo un error");
-			});
-        });
+							if (!category)
+								throw new Error("No existia la categoria");
+							channel.setParent(category.id);
+
+							//guardamos el canal
+							cliente.canales.set(channel.name, channel);
+
+							//crear el mensaje para que reaccionen
+							let reacciones = cliente.channels.cache.get(
+								'868194592569323550'
+							);
+							reacciones.messages
+								.fetch({ limit: 1 })
+								.then((mensaje) => {
+									let msjReaccion = mensaje.first();
+									let contenido = msjReaccion.content;
+									contenido += `\n\n${emoji[0]}: ${concatenado}`;
+									msjReaccion.edit(contenido);
+									msjReaccion.react(emoji[0]);
+									fs.readFile('reacciones.json','utf8',function c(err, data){
+										if(err){
+											console.log(err);
+										}
+										else {
+											console.log("se esta anadiendo la reaccion al json")
+											let reacciones = JSON.parse(data);
+											let reaccion = `${emoji[0]} ${rol[0]}`
+											reacciones.tabla.push({reaccion: reaccion});
+											fs.writeFile('reacciones.json',JSON.stringify(reacciones),'utf8',function(err) {
+												if (err) throw err;
+												console.log('complete');
+												}
+											);
+											console.log("se anadio")
+										}
+									});
+								});
+						});
+					message.guild.channels
+						.create("u voz " + concatenado, {
+							type: "voice",
+							permissionOverwrites: roles,
+						})
+						.then((channel) => {
+							let category = cliente.channels.cache.find(
+								(c) =>
+									c.name == concatenado &&
+									c.type == "category"
+							);
+							if (!category)
+								throw new Error("No existia la categoria");
+							channel.setParent(category.id);
+						});
+					message.reply("Se han creado los canales y el rol");
+				})
+				.catch((resultado) => {
+					message.reply("Al parecer hubo un error");
+					console.log(resultado);
+				});
+		});
 	},
 };
