@@ -1,6 +1,6 @@
 //se cargan las cosas necesarias
 const Discord = require("discord.js");
-const { prefix, token } = require("./config.json");
+const { prefix, token, server} = require("./config.json");
 const fs = require("fs");
 
 
@@ -37,7 +37,7 @@ cliente.on("ready", (estado) => {
 	}
 
 	cliente.rolsitos = new Map();
-	var roles = cliente.guilds.cache.get("860627511300587560").roles.cache;
+	var roles = cliente.guilds.cache.get(server).roles.cache;
 	for (var i of roles) {
 		cliente.rolsitos.set(i[1].name, i[0]);
 	}
@@ -52,6 +52,7 @@ cliente.on("ready", (estado) => {
 			var r = i.reaccion.split(" ");
 			cliente.reacciones.set(r[0], r[1]);
 		}
+		console.log(cliente.reacciones)
 	}});
 });
 
@@ -102,14 +103,15 @@ cliente.on("channelCreate", (evento) => {
 
 cliente.on("messageReactionAdd", (reaccion, usuario) => {
 	var e = reaccion._emoji.name;
-	var quien = cliente.guilds.cache.get('860627511300587560').members.cache.get(usuario.id);
+	var quien = cliente.guilds.cache.get(server).members.cache.get(usuario.id);
 	var rol = cliente.reacciones.get(e);
 	quien.roles.add(cliente.rolsitos.get(rol));
+	console.log(cliente.reacciones);
 });
 
 cliente.on("messageReactionRemove", (reaccion, usuario) => {
 	var e = reaccion._emoji.name;
-	var quien = cliente.guilds.cache.get('860627511300587560').members.cache.get(usuario.id);
+	var quien = cliente.guilds.cache.get(server).members.cache.get(usuario.id);
 	var rol = cliente.reacciones.get(e);
 	quien.roles.remove(cliente.rolsitos.get(rol));
 });

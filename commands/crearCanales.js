@@ -1,4 +1,5 @@
 var fs = require("fs");
+var {canalreacciones} = require('../config.json')
 
 module.exports = {
 	nombre: "crearmateria",
@@ -93,7 +94,7 @@ module.exports = {
 
 							//crear el mensaje para que reaccionen
 							let reacciones = cliente.channels.cache.get(
-								'868194592569323550'
+								canalreacciones
 							);
 							reacciones.messages
 								.fetch({ limit: 1 })
@@ -108,16 +109,14 @@ module.exports = {
 											console.log(err);
 										}
 										else {
-											console.log("se esta anadiendo la reaccion al json")
 											let reacciones = JSON.parse(data);
 											let reaccion = `${emoji[0]} ${rol[0]}`
 											reacciones.tabla.push({reaccion: reaccion});
 											fs.writeFile('reacciones.json',JSON.stringify(reacciones),'utf8',function(err) {
 												if (err) throw err;
-												console.log('complete');
+												cliente.reacciones.set(emoji[0],rol[0]);
 												}
 											);
-											console.log("se anadio")
 										}
 									});
 								});
