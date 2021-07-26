@@ -74,7 +74,7 @@ module.exports = {
 				.then((respuesta) => {
 					//creo el canal de texto
 					message.guild.channels
-						.create("u texto " + concatenado, {
+						.create("texto " + concatenado, {
 							type: "text",
 							permissionOverwrites: roles,
 						})
@@ -122,7 +122,7 @@ module.exports = {
 								});
 						});
 					message.guild.channels
-						.create("u voz " + concatenado, {
+						.create("voz " + concatenado, {
 							type: "voice",
 							permissionOverwrites: roles,
 						})
