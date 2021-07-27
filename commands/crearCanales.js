@@ -1,5 +1,6 @@
 var fs = require("fs");
-var {canalreacciones} = require('../config.json')
+var {canalreacciones,server} = require('../config.json')
+var {Permissions} = require('discord.js')
 
 module.exports = {
 	nombre: "crearmateria",
@@ -44,7 +45,7 @@ module.exports = {
 		for (var i of rol) {
 			var cual = cliente.rolsitos.get(i);
 			if (cual) {
-				roles.push({ id: cliente.rolsitos.get(i) });
+				roles.push({type: 'role', id: cual, allow: [Permissions.FLAGS.VIEW_CHANNEL]});
 			} else {
 				//se manda a crear los roles
 				promesas.push(
@@ -59,13 +60,15 @@ module.exports = {
 								respuesta["name"],
 								respuesta["id"]
 							);
-							roles.push({ id: respuesta["id"] });
+							roles.push({type: 'role', id: respuesta["id"], allow: [Permissions.FLAGS.VIEW_CHANNEL]});
 						})
 				);
 			}
 		}
 		//creo la categoria
 		Promise.all(promesas).then((respuesta) => {
+			roles.push({type: 'member', id: cliente.user.id, allow: [Permissions.FLAGS.VIEW_CHANNEL]});
+			roles.push({type: 'role', id: server, deny: [Permissions.FLAGS.VIEW_CHANNEL]});
 			message.guild.channels
 				.create(concatenado, {
 					type: "category",
