@@ -5,5 +5,5 @@ module.exports = {
 	ejecutar(cliente, message, args) {
 		let texto = args.join(" ");
 		cliente.channels.cache.get(canalreacciones).send(texto);
-	},
+	}
 };

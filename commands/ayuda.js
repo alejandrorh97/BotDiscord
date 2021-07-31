@@ -34,5 +34,5 @@ module.exports = {
 			}
 		}
 		mensaje.channel.send(embebido);
-	},
+	}
 };

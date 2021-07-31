@@ -7,6 +7,7 @@ module.exports = {
 	descripcion: "Crear la categoria, canales texto y voz",
 	args: true,
 	soloServer: true,
+	borrable: false,
 	usos: "-n [nombre de la materia] -r [rol para la materia] -e [emoji para la reaccion]",
 	ejecutar(cliente, message, args) {
 		//ver si puede solo admins
@@ -38,6 +39,11 @@ module.exports = {
 					break;
 			}
 		}
+		
+		if (nombre.length === 0 && rol.length === 0 && emoji.length === 0 ){
+			message.reply("No has puesto ningun parametro valido");
+			return;
+		}
 		var concatenado = nombre.join(" ");
 		//asignamos los roles
 		var promesas = [];
@@ -62,6 +68,9 @@ module.exports = {
 							);
 							roles.push({type: 'role', id: respuesta["id"], allow: [Permissions.FLAGS.VIEW_CHANNEL]});
 						})
+						.catch( error => {
+							throw error;
+						})
 				);
 			}
 		}
@@ -74,7 +83,7 @@ module.exports = {
 					type: "category",
 					permissionOverwrites: roles,
 				})
-				.then((respuesta) => {
+				.then( categoria => {
 					//creo el canal de texto
 					message.guild.channels
 						.create("texto " + concatenado, {
@@ -82,15 +91,7 @@ module.exports = {
 							permissionOverwrites: roles,
 						})
 						.then((channel) => {
-							let category = cliente.channels.cache.find(
-								(c) =>
-									c.name == concatenado &&
-									c.type == "category"
-							);
-
-							if (!category)
-								throw new Error("No existia la categoria");
-							channel.setParent(category.id);
+							channel.setParent(categoria.id);
 
 							//guardamos el canal
 							cliente.canales.set(channel.name, channel);
@@ -142,9 +143,8 @@ module.exports = {
 					message.reply("Se han creado los canales y el rol");
 				})
 				.catch((resultado) => {
-					message.reply("Al parecer hubo un error");
-					console.log(resultado);
+					throw resultado;
 				});
 		});
-	},
+	}
 };
