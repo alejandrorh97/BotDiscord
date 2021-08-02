@@ -11,6 +11,7 @@ module.exports = {
 	nombre: 'ping',
 	descripcion: 'Ping!',
     args: false,
+	admins: false,
     soloServer: false,
 	borrable: false,
 	usos: "",

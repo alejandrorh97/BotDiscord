@@ -1,7 +1,11 @@
-var {canalreacciones} = require('../config.json')
 module.exports = {
 	nombre: "msj",
-	descripcion: "Tendria que mandar un msj a otro canal :v ",
+	args: true,
+    admins: true,
+    soloServer: true,
+    borrable: true,
+    usos: ``,
+	descripcion: "Manda un mensaje hacia un canal",
 	ejecutar(cliente, message, args) {
 		let texto = args.join(" ");
 		cliente.channels.cache.get(canalreacciones).send(texto);

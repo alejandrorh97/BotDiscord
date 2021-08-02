@@ -6,17 +6,11 @@ module.exports = {
 	nombre: "crearmateria",
 	descripcion: "Crear la categoria, canales texto y voz",
 	args: true,
+	admins: true,
 	soloServer: true,
 	borrable: false,
 	usos: "-n [nombre de la materia] -r [rol para la materia] -e [emoji para la reaccion]",
 	ejecutar(cliente, message, args) {
-		//ver si puede solo admins
-		var perms = message.member.hasPermission("ADMINISTRATOR");
-		if (!perms) {
-			return message.reply(
-				"Me dijeron que no te hiciera caso :wink: :ok_hand:"
-			);
-		}
 		//sacamos los parametros
 		var nombre = [];
 		var rol = [];
