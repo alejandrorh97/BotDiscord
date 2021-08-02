@@ -3,12 +3,12 @@ const { prefix } = require("../config.json");
 
 module.exports = {
     nombre: "rifar",
-    descripcion: "Comando para crear grupos y rifar con quien van",
+    descripcion: "Comando para crear grupos y rifar quien va con quien",
     args: true,
     admins: false,
     soloServer: true,
     borrable: true,
-    usos: `-grupos [Cuantos grupos hay que formar] -cuantos [cuanto va a haber en cada grupo]`,
+    usos: `-g [Cuantos grupos hay que formar] -c [cuantos va a haber en cada grupo]`,
     ejecutar(cliente, mensaje, args) {
         var grupos = 0;
         var cuantos = 0;

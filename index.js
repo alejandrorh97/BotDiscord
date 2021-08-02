@@ -71,7 +71,6 @@ cliente.on("ready", (estado) => {
 //este se ejecuta cuando se ha mandado un nuevo mensaje
 cliente.on("message", (mensaje) => {
     if (mensaje.author.bot) return; //si el mensaje es de un bot lo ignora
-    
     let contenido = mensaje.content;
     if (contenido.startsWith(prefix)) {
         let argumentos = contenido.slice(prefix.length).trim().split(" "); // se extreaen los argumentos
