@@ -9,7 +9,9 @@
   "author": "Alejandro Rivas",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.5.3"
+    "discord.js": "^12.5.3",
+    "node-cron": "^3.0.0",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"

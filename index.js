@@ -15,8 +15,8 @@ const cliente = new Discord.Client({
 });
 cliente.commands = new Discord.Collection();
 
-//se cargan los comandos necesarios
-const comandos = fs
+//se cargan los comandos
+let comandos = fs
     .readdirSync("./commands")
     .filter((file) => file.endsWith(".js"));
 for (let archivo of comandos) {
@@ -27,13 +27,10 @@ for (let archivo of comandos) {
 //este se ejecuta cuando ya esta listo
 cliente.on("ready", (estado) => {
     console.log("Ya estos conectado a discord");
-    cliente.user
-        .setPresence({
-            activity: { type: "LISTENING", name: "Me estan haciendo" },
-            status: "online",
-        })
-        .then()
-        .catch(console.error);
+    cliente.user.setPresence({
+        activity: { type: "LISTENING", name: `Comandos en ${prefix}` },
+        status: "online",
+    });
 
     //guardamos el nombre de los canales y sus ids
     cliente.canales = new Map();
@@ -91,10 +88,10 @@ cliente.on("message", (mensaje) => {
                 mensaje.reply(
                     "Me dijeron que no te hiciera caso :wink: :ok_hand:"
                 );
-				if (mensaje.channel.type !== "dm") {
-					mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
-				}
-				return
+                if (mensaje.channel.type !== "dm") {
+                    mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
+                }
+                return;
             }
         }
 

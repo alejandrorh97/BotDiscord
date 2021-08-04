@@ -4,7 +4,7 @@ module.exports = {
     admins: true,
     soloServer: true,
     borrable: true,
-    usos: ``,
+    usos: "-d [canal donde se va enviar el mensaje] -q [Opcional, A quien mencionar] -m [El mensaje a enviarse]",
 	descripcion: "Manda un mensaje hacia un canal",
 	ejecutar(cliente, message, args) {
 		var cual = "";
