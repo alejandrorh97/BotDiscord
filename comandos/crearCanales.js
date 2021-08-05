@@ -1,4 +1,4 @@
-var fs = require("fs");
+var db = require('megadb');
 var {canalreacciones,server} = require('../config.json')
 var {Permissions} = require('discord.js')
 
@@ -43,7 +43,7 @@ module.exports = {
 		var promesas = [];
 		var roles = [];
 		for (var i of rol) {
-			var cual = cliente.rolsitos.get(i);
+			var cual = cliente.roles.get(i);
 			if (cual) {
 				roles.push({type: 'role', id: cual, allow: [Permissions.FLAGS.VIEW_CHANNEL]});
 			} else {
@@ -56,7 +56,7 @@ module.exports = {
 							},
 						})
 						.then((respuesta) => {
-							cliente.rolsitos.set(
+							cliente.roles.set(
 								respuesta["name"],
 								respuesta["id"]
 							);
@@ -87,9 +87,6 @@ module.exports = {
 						.then((channel) => {
 							channel.setParent(categoria.id);
 
-							//guardamos el canal
-							cliente.canales.set(channel.name, channel);
-
 							//crear el mensaje para que reaccionen
 							let reacciones = cliente.channels.cache.get(
 								canalreacciones
@@ -102,20 +99,11 @@ module.exports = {
 									contenido += `\n\n${emoji[0]}: ${concatenado}`;
 									msjReaccion.edit(contenido);
 									msjReaccion.react(emoji[0]);
-									fs.readFile('reacciones.json','utf8',function c(err, data){
-										if(err){
-											console.log(err);
-										}
-										else {
-											let reacciones = JSON.parse(data);
-											let reaccion = `${emoji[0]} ${rol[0]}`
-											reacciones.tabla.push({reaccion: reaccion});
-											fs.writeFile('reacciones.json',JSON.stringify(reacciones),'utf8',function(err) {
-												if (err) throw err;
-												cliente.reacciones.set(emoji[0],rol[0]);
-												}
-											);
-										}
+									let materia = new db.crearDB('reacciones');
+									materia.push('materias', {
+										materia: concatenado,
+										emoji: emoji[0],
+										rol: rol[0]
 									});
 								});
 						});
@@ -125,19 +113,9 @@ module.exports = {
 							permissionOverwrites: roles,
 						})
 						.then((channel) => {
-							let category = cliente.channels.cache.find(
-								(c) =>
-									c.name == concatenado &&
-									c.type == "category"
-							);
-							if (!category)
-								throw new Error("No existia la categoria");
-							channel.setParent(category.id);
+							channel.setParent(categoria.id);
 						});
 					message.reply("Se han creado los canales y el rol");
-				})
-				.catch((resultado) => {
-					throw resultado;
 				});
 		});
 	}
