@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^12.5.3",
+    "megadb": "^3.4.0",
     "node-cron": "^3.0.0",
     "sqlite3": "^5.0.2"
   },

@@ -1,161 +1,153 @@
-//se cargan las cosas necesarias
 const Discord = require("discord.js");
 const {
-    prefix,
-    token,
-    server,
-    canallogs,
-    mensajereaccion,
+	prefix,
+	token,
+	server,
+	canallogs,
+	mensajereaccion,
 } = require("./config.json");
 const fs = require("fs");
+const { enviarMensaje } = require("./utils");
+const db = require("megadb");
 
-//se crea los objetos necesarios
+//Creamos los objetos necesarios
 const cliente = new Discord.Client({
-    partials: ["MESSAGE", "CHANNEL", "REACTION"],
+	partials: ["MESSAGE", "CHANNEL", "REACTION"],
 });
-cliente.commands = new Discord.Collection();
 
-//se cargan los comandos
+cliente.comandos = new Discord.Collection();
+
+//cargamos los comandos
+
 let comandos = fs
-    .readdirSync("./commands")
-    .filter((file) => file.endsWith(".js"));
+	.readdirSync("./comandos")
+	.filter((file) => file.endsWith(".js"));
 for (let archivo of comandos) {
-    let comando = require(`./commands/${archivo}`);
-    cliente.commands.set(comando.nombre, comando);
+	let comando = require(`./comandos/${archivo}`);
+	cliente.comandos.set(comando.nombre, comando);
 }
 
-//este se ejecuta cuando ya esta listo
-cliente.on("ready", (estado) => {
-    console.log("Ya estos conectado a discord");
-    cliente.user.setPresence({
-        activity: { type: "LISTENING", name: `Comandos en ${prefix}` },
-        status: "online",
-    });
+//evento que se ejecuta al estar conectado a discord
+cliente.on("ready", async () => {
+	//cargar roles y guardar los id
+	cliente.roles = new Discord.Collection();
+	let roles = cliente.guilds.cache.get(server).roles.cache;
+	for (let rol of roles) {
+		cliente.roles.set(rol[1].name, rol[0]);
+	}
 
-    //guardamos el nombre de los canales y sus ids
-    cliente.canales = new Map();
-    var canales = cliente.guilds.cache.get(server).channels.cache;
-    for (let canal of canales) {
-        if (canal[1].type === "text") {
-            cliente.canales.set(canal[1].name, canal[0]);
-        }
-    }
+	cliente.reacciones = new Discord.Collection();
+	let reacciones = new db.crearDB("reacciones");
+	let materias = await reacciones.obtener("materias");
+	for (let materia of materias) {
+		cliente.reacciones.set(materia.emoji, materia.rol);
+	}
 
-    cliente.rolsitos = new Map();
-    var roles = cliente.guilds.cache.get(server).roles.cache;
-    for (var i of roles) {
-        cliente.rolsitos.set(i[1].name, i[0]);
-    }
-
-    cliente.reacciones = new Map();
-    fs.readFile(
-        "reacciones.json",
-        "utf8",
-        function readFileCallback(err, data) {
-            if (err) {
-                console.log(err);
-            } else {
-                let reacciones = JSON.parse(data); //now it an object
-                for (var i of reacciones.tabla) {
-                    var r = i.reaccion.split(" ");
-                    cliente.reacciones.set(r[0], r[1]);
-                }
-            }
-        }
-    );
+	let { formatearFecha, formatearHora } = require("./utils");
+	let date = new Date();
+	/*enviarMensaje({
+		cliente: cliente,
+		canal: canallogs,
+		server: server,
+		mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(date)}`,
+	});*/
+	console.log("Ya estamos conectado a discord");
 });
 
-//este se ejecuta cuando se ha mandado un nuevo mensaje
-cliente.on("message", (mensaje) => {
-    if (mensaje.author.bot) return; //si el mensaje es de un bot lo ignora
-    let contenido = mensaje.content;
-    if (contenido.startsWith(prefix)) {
-        let argumentos = contenido.slice(prefix.length).trim().split(" "); // se extreaen los argumentos
-        let cual = argumentos.shift().toLocaleLowerCase(); //se extrae que comando es
+cliente.on("message", async (mensaje) => {
+	if (mensaje.author.bot) return; //si es mensaje de un bot se ignora
 
-        if (!cliente.commands.has(cual)) {
-            mensaje.reply("No era un comando :face_with_monocle:");
-            return;
-        }
+	let contenido = mensaje.content;
+	if (contenido.startsWith(prefix)) {
+		//extraer los argumentos
+		let argumentos = contenido.slice(prefix.length).trim().split(" ");
+		let borrable = mensaje.channel.type === "dm" ? true : false;
+		let cual = argumentos.shift().toLowerCase();
 
-        let comando = cliente.commands.get(cual);
+		console.log({ contenido, cual });
+		//ver si existe el comando
+		if (!cliente.comandos.has(cual)) {
+			if (!borrable) {
+				await mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
+			}
+			mensaje.reply(`No era un comando :face_with_monocle:
+            \nUsa el comando ${prefix}ayuda para ver los comandos disponibles`);
+			return;
+		}
 
-        //ver si solo admins
-        if (comando.admins) {
-            //aqui se mira si es un mensaje en privado al bot
-            var perms = mensaje.member.hasPermission("ADMINISTRATOR");
-            if (!perms) {
-                mensaje.reply(
-                    "Me dijeron que no te hiciera caso :wink: :ok_hand:"
-                );
-                if (mensaje.channel.type !== "dm") {
-                    mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
-                }
-                return;
-            }
-        }
+		let comando = cliente.comandos.get(cual);
 
-        //se mira si se puede borrar el comando
-        if (comando.borrable) {
-            //aqui se mira si es un mensaje en privado al bot
-            if (mensaje.channel.type !== "dm") {
-                mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
-            }
-        }
+		if (comando.soloServer && mensaje.channel.type === "dm") {
+			mensaje.reply(
+				"Solo puedes usar este comando en un servidor, no en mensaje privado :face_with_monocle:"
+			);
+			return;
+		}
 
-        if (comando.soloServer && mensaje.channel.type === "dm") {
-            return mensaje.reply(
-                "Solo puedes usar este comando en un servidor, no en mensaje privado :face_with_monocle:"
-            );
-        }
+		//controlar que los comandos que solo admins pueden ejecutar
+		if (comando.admins) {
+			var permisos = mensaje.member.hasPermission("ADMINISTRATOR");
+			if (!permisos) {
+				if (!borrable) {
+					await mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
+				}
+				mensaje.reply(
+					"Me dijeron que no te hiciera caso :wink: :ok_hand:"
+				);
+			}
+		}
 
-        if (comando.args && !argumentos.length) {
-            return mensaje.channel.send(
-                `No has dado ningun argumento ${mensaje.author} :triumph:`
-            );
-        }
+		//se mira si se puede borrar el mensaje
+		if (comando.borrable) {
+			if (borrable) await mensaje.delete();
+		}
 
-        try {
-            comando.ejecutar(cliente, mensaje, argumentos);
-        } catch (error) {
-            //se notifica del error
-            console.error(`hubo un error ${error}`);
-            mensaje.reply("Por alguna razon hubo un error :man_shrugging:");
-            let texto = `hubo un error al procesar un comando`;
-            texto += `\n\tComando ejecutado: ${mensaje.content} 
-			\n\tError ${error}
-			\n-------------------------------------------`;
-            cliente.guilds.cache
-                .get(server)
-                .channels.cache.get(canallogs)
-                .send(texto);
-        }
-    }
+		//si el comando necesita argumentos y no se envio nada
+		if (comando.args && !argumentos.length) {
+			mensaje.reply(`No has dado ningun argumento :triumph:
+            \nEsta es la forma de usar el comando: ${comando.usos}`);
+			return;
+		}
+
+		try {
+			comando.ejecutar(cliente, mensaje, argumentos);
+		} catch (error) {
+			console.error(`Hubo un error ${error}`);
+			mensaje.reply(
+				`Hubo un error al procesar el comando :man_shrugging:`
+			);
+			enviarMensaje({
+				cliente: cliente,
+				server: server,
+				canal: canallogs,
+				mensaje: `Comando Ejecutado ${mensaje.content}
+                \n\tError ${error}
+                \n--------------------------------------`,
+			});
+		}
+	}
 });
 
-cliente.on("channelCreate", (evento) => {});
-
-cliente.on("messageReactionAdd", (reaccion, usuario) => {
-    if (reaccion.message.id === mensajereaccion) {
-        var e = reaccion._emoji.name;
-        var quien = cliente.guilds.cache
-            .get(server)
-            .members.cache.get(usuario.id);
-        var rol = cliente.reacciones.get(e);
-        quien.roles.add(cliente.rolsitos.get(rol));
-    }
+cliente.on("messageReactionAdd", async (reaccion, usuario) => {
+	if (reaccion.message.id === mensajereaccion) {
+		var emoji = reaccion._emoji.name;
+		var quien = cliente.guilds.cache
+			.get(server)
+			.members.cache.get(usuario.id);
+		var rol = cliente.reacciones.get(emoji);
+		quien.roles.add(cliente.roles.get(rol));
+	}
 });
 
-cliente.on("messageReactionRemove", (reaccion, usuario) => {
-    if (reaccion.message.id === mensajereaccion) {
-        var e = reaccion._emoji.name;
-        var quien = cliente.guilds.cache
-            .get(server)
-            .members.cache.get(usuario.id);
-        var rol = cliente.reacciones.get(e);
-        quien.roles.remove(cliente.rolsitos.get(rol));
-    }
+cliente.on("messageReactionRemove", async (reaccion, usuario) => {
+	if (reaccion.message.id === mensajereaccion) {
+		var emoji = reaccion._emoji.name;
+		var quien = cliente.guilds.cache
+			.get(server)
+			.members.cache.get(usuario.id);
+		var rol = cliente.reacciones.get(emoji);
+		quien.roles.remove(cliente.roles.get(rol));
+	}
 });
 
-//aqui ya se conecta el bot a discord
 cliente.login(token);
