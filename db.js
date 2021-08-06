@@ -12,6 +12,7 @@ class DB {
                 "actividad"	TEXT NOT NULL,
                 "mensaje"	TEXT,
                 "hora"	TEXT NOT NULL,
+				"canal" TEXT NOT NULL,
                 PRIMARY KEY("id" AUTOINCREMENT)
             )`);
 			console.log("Conectado a la DB");
@@ -69,12 +70,11 @@ class DB {
 		});
 	}
 
-	setRecordatorios({ fecha, fechanode, materia, actividad, mensaje, hora }) {
-        console.log( {fecha, fechanode, materia, actividad, mensaje, hora});
+	setRecordatorios({ fecha, fechanode, materia, actividad, mensaje, hora, canal}) {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.run(
-				`INSERT INTO recordatorios(fecha, fechanode, materia, actividad, mensaje, hora) VALUES (?,?,?,?,?,?);`,
-				[fecha, fechanode, materia, actividad, mensaje, hora],
+				`INSERT INTO recordatorios(fecha, fechanode, materia, actividad, mensaje, hora, canal) VALUES (?,?,?,?,?,?,?);`,
+				[fecha, fechanode, materia, actividad, mensaje, hora,canal],
 				(error) => {
 					if (error) {
 						console.error(`Error al guardar el recordatorio: ${error}`);
@@ -87,11 +87,11 @@ class DB {
 		});
 	}
 
-	updateRecordatorio({ id, fecha, fechanode, materia, actividad, mensaje, hora }) {
+	updateRecordatorio({ id, fecha, fechanode, materia, actividad, mensaje, hora, canal}) {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.run(
-				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ? WHERE id = ?",
-				[fecha, fechanode, materia, actividad, mensaje, hora, id],
+				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ?, canal = ? WHERE id = ?",
+				[fecha, fechanode, materia, actividad, mensaje, hora,canal, id],
 				(error) => {
 					if (err) {
 						console.error(`Hubo un error al actualizar el recordatorio: ${error}`);

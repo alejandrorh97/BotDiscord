@@ -9,6 +9,7 @@ const {
 const fs = require("fs");
 const { enviarMensaje } = require("./utils");
 const db = require("megadb");
+const cron = require('node-cron');
 
 //Creamos los objetos necesarios
 const cliente = new Discord.Client({
@@ -107,7 +108,7 @@ cliente.on("message", async (mensaje) => {
 			//si el comando necesita argumentos y no se envio nada
 			if (comando.args && !argumentos.length) {
 				mensaje.reply(`No has dado ningun argumento :triumph:
-            \nEsta es la forma de usar el comando: ${comando.usos}`);
+            \nEsta es la forma de usar el comando:\n ${comando.usos}`);
 				return;
 			}
 
