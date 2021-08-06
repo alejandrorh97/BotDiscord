@@ -18,8 +18,15 @@ module.exports = {
 		return strTime;
 	},
 	formatearFecha(fecha) {
-		return `${fecha.getDate()}-${
-			fecha.getMonth() + 1
-		}-${fecha.getFullYear()} `;
+		return `${fecha.getDate()}-${fecha.getMonth() + 1
+			}-${fecha.getFullYear()} `;
+	},
+	horaNode(hora) {
+		var str = "";
+		if (hora.includes("pm")) {
+			vector=hora.split("pm");
+			vector=vector[0].split(":");
+			return ((parseInt(vector[0],10)+12).toString()+":"+vector[1]);
+		}
 	}
-};
+}
