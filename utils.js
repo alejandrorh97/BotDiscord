@@ -22,7 +22,6 @@ module.exports = {
 			}-${fecha.getFullYear()} `;
 	},
 	horaNode(hora) {
-		var str = "";
 		if (hora.includes("pm")) {
 			vector=hora.split("pm");
 			vector=vector[0].split(":");
