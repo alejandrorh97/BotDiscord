@@ -1,105 +1,125 @@
-const sqlite = require('sqlite3');
+const sqlite3 = require("sqlite3");
 
-function conectar() {
-	let db = new sqlite.Database("./database.db", (err) => {
-		if (err) {
-			console.log(err);
-			throw err;
-		}
+class DB {
+	constructor() {
+		this.conexion = new sqlite3.Database("./database.db", (error) => {
+			if (error) console.error(`Error al conectarse a la DB ${DB}`);
+			this.conexion.run(`CREATE TABLE IF NOT EXISTS "recordatorios" (
+                "id"	INTEGER NOT NULL,
+                "fecha"	TEXT NOT NULL,
+                "fechanode"	TEXT NOT NULL,
+                "materia"	TEXT NOT NULL,
+                "actividad"	TEXT NOT NULL,
+                "mensaje"	TEXT,
+                "hora"	TEXT NOT NULL,
+                PRIMARY KEY("id" AUTOINCREMENT)
+            )`);
+			console.log("Conectado a la DB");
+		});
+	}
 
-		db.run(`CREATE TABLE IF NOT EXISTS recordatorios 
-		(id integer primary key not null, fecha text not null, fechaNode text not null,
-			materia tetxt not null, actividad text not null, mensaje text)`);
-		console.log("Conectado a la db");
-	});
-	return db;
+	getRecordatoriosSemanales() {
+		return new Promise((resuelta, rechazada) => {
+			this.conexion.all(
+				`SELECT * FROM recordatorios WHERE fecha BETWEEN date('now') AND date('now', '+7 day');`,
+				[],
+				(error, filas) => {
+					if (error) {
+						console.error(`Error al obtener los recordatorios semanales: ${error}`);
+						rechazada(error);
+					} else {
+						resuelta(filas);
+					}
+				}
+			);
+		});
+	}
+
+	getRecordatoriosDiarios() {
+		return new Promise((resuelta, rechazada) => {
+			this.conexion.all(
+				`SELECT * FROM recordatorios WHERE fecha = date('now');`,
+				[],
+				(error, filas) => {
+					if (error) {
+						console.error(`Error al obtener los recordatorios diarios: ${error}`);
+						rechazada(error);
+					} else {
+						resuelta(filas);
+					}
+				}
+			);
+		});
+	}
+
+	getRecordatoriosMateria(materia) {
+		return new Promise((resuelta, rechazada) => {
+			this.conexion.all(
+				`SELECT * FROM recordatorios WHERE materia = ?;`,
+				[materia],
+				(error, filas) => {
+					if (error) {
+						console.error(`Error al obtener los recordatorios diarios: ${error}`);
+						rechazada(error);
+					} else {
+						resuelta(filas);
+					}
+				}
+			);
+		});
+	}
+
+	setRecordatorios({ fecha, fechanode, materia, actividad, mensaje, hora }) {
+        console.log( {fecha, fechanode, materia, actividad, mensaje, hora});
+		return new Promise((resuelta, rechazada) => {
+			this.conexion.run(
+				`INSERT INTO recordatorios(fecha, fechanode, materia, actividad, mensaje, hora) VALUES (?,?,?,?,?,?);`,
+				[fecha, fechanode, materia, actividad, mensaje, hora],
+				(error) => {
+					if (error) {
+						console.error(`Error al guardar el recordatorio: ${error}`);
+						rechazada(error);
+					} else {
+						resuelta();
+					}
+				}
+			);
+		});
+	}
+
+	updateRecordatorio({ id, fecha, fechanode, materia, actividad, mensaje, hora }) {
+		return new Promise((resuelta, rechazada) => {
+			this.conexion.run(
+				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ? WHERE id = ?",
+				[fecha, fechanode, materia, actividad, mensaje, hora, id],
+				(error) => {
+					if (err) {
+						console.error(`Hubo un error al actualizar el recordatorio: ${error}`);
+                        rechazada(error);
+					}
+					else {
+                        resuelta();
+                    }
+				}
+			);
+		});
+	}
+
+    deleteRecordatorio({id}){
+        return new Promise((resuelta, rechazada) => {
+            this.conexion.run(
+                `DELETE FROM recordatorios WHERE id = ?`,
+                [id],
+                (error) => {
+                    if(error){
+                        console.error(`Error al eliminar el recordatorio ${error}`);
+                        rechazada(error);
+                    }
+                    resuelta();
+                }
+            )
+        });
+    }
 }
 
-function getRecordatoriosSemanales() {
-	let db = conectar();
-	db.all(
-		`SELECT * FROM recordatorios WHERE fecha BETWEEN date('now') AND date('now', '+7 day'); `,
-		[],
-		(err, filas) => {
-			if (err) {
-				console.log(err);
-			}
-			db.close();
-			return filas;
-		}
-	);
-}
-
-	
-function getRecordatoriosDiarios(){
-	let db = conectar();
-	db.all(
-		`SELECT * FROM recordatorios WHERE fecha = date('now');`,
-		[],
-		(err, filas) => {
-			if (err) {
-				console.log(err);
-			}
-			db.close();
-			return filas;
-		}
-	);
-	
-}
-function getRecordatoriosMateria(materia){
-	let db = conectar();
-	db.all(
-		`SELECT * FROM recordatorios WHERE materia = ?;`,
-		[materia],
-		(err, filas) => {
-			if (err) {
-				console.log(err);
-			}
-			db.close();
-			return filas;
-		}
-	);
-}
-
-function setRecordatorio({fecha, fechanode, materia, actividad, mensaje, hora}){
-    let db = conectar();
-    db.run(
-        'INSERT INTO recordatorios(fecha, fechaNode, materia, mensaje, actividad, hora) VALUES (?,?,?,?,?,?)',
-        [fecha,fechanode, materia, actividad, mensaje, hora],
-        err => {
-            if (err) {
-                console.log("Hubo un error al guardar el recordatorio");
-            }
-            console.log("Recordatorio guardado");
-        }
-    )
-}
-
-function updateRecordatorio({id, fecha, fechanode, materia, actividad, mensaje, hora}){
-    let db = conectar();
-    db.run(
-        'UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ? WHERE id = ?',
-        [fecha,fechanode, materia, actividad, mensaje, hora, id],
-        err => {
-            if (err) {
-                console.log("Hubo un error al actualizar el recordatorio");
-            }
-            console.log("Recordatorio actualizar");
-        }
-    )
-    db.close();
-}
-
-function deleteRecordatorio({id}){
-    let db = conectar();
-    db.run(
-        'DELETE FROM recordatorios WHERE id = ?',
-        [id],
-        err => {
-            if (err) {
-                console.log(err)
-            }
-            console.log('Recordatorio eliminado');
-        }
-    )
-}
+module.exports = DB;
