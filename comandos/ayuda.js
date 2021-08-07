@@ -11,11 +11,11 @@ module.exports = {
     usos: "[comando]",
     ejecutar(cliente, mensaje, args) {
         let datos = [];
-        let { commands } = mensaje.client;
+        let { comandos } = mensaje.client;
         let embebido = new MessageEmbed();
         if (!args.length) {
             embebido.setTitle("Comandos disponibles");
-            for (let comando of commands) {
+            for (let comando of comandos) {
                 //ver si solo admins
                 if (comando[1].admins && !mensaje.member.hasPermission('ADMINISTRATOR')) {
                     continue;
@@ -33,8 +33,8 @@ module.exports = {
         } else if (args.length >= 2) {
             embebido.addField("Error", "Muchos parametros solo 1");
         } else {
-            if (commands.has(args[0])) {
-                comando = commands.get(args[0]);
+            if (comandos.has(args[0])) {
+                comando = comandos.get(args[0]);
                 embebido.setTitle(`Comando ${args[0]}`);
                 embebido.addField("Descripcion", comando.descripcion);
                 embebido.addField("Uso", `${prefix}${args[0]} ${comando.usos}`);

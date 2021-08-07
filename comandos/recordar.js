@@ -1,4 +1,5 @@
 const DB = require('../db');
+const {prefix} = require('../config.json');
 
 module.exports = {
 	nombre: 'recordar',
@@ -69,6 +70,13 @@ module.exports = {
             mensaje.reply("Solo un canal a la vez")
             return;
         }
+
+        for(var rol of cliente.reacciones.values()){
+            if (rol !== mensaje.mentions.roles.first().name) {
+                mensaje.reply(`Solo puedes agregar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
+                return;
+            }
+        }
         //preparamos los datos
         materia = mensaje.mentions.roles.first().toString();
         donde = mensaje.mentions.channels.first().id;
@@ -76,6 +84,7 @@ module.exports = {
         recordatorio = recordatorio.join(' ');
         nota = nota.join(' ');
         var db = new DB();
+        db.conectar();
         fecha = new Date(fecha[2], fecha[1]-1, fecha[0]);
         await db.setRecordatorios(
             {

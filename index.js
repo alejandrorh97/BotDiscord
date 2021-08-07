@@ -31,6 +31,11 @@ for (let archivo of comandos) {
 cliente.on("ready", async () => {
 	//cargar roles y guardar los id
 	try {
+		cliente.user.setPresence({
+			activity: { type: "LISTENING", name: `Comandos en ${prefix}` },
+			status: "online",
+		});
+
 		cliente.roles = new Discord.Collection();
 		let roles = cliente.guilds.cache.get(server).roles.cache;
 		for (let rol of roles) {
@@ -102,7 +107,7 @@ cliente.on("message", async (mensaje) => {
 
 			//se mira si se puede borrar el mensaje
 			if (comando.borrable) {
-				if (borrable) await mensaje.delete();
+				if (!borrable) await mensaje.delete();
 			}
 
 			//si el comando necesita argumentos y no se envio nada

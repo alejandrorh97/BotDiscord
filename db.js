@@ -2,20 +2,32 @@ const sqlite3 = require("sqlite3");
 
 class DB {
 	constructor() {
-		this.conexion = new sqlite3.Database("./database.db", (error) => {
-			if (error) console.error(`Error al conectarse a la DB ${DB}`);
-			this.conexion.run(`CREATE TABLE IF NOT EXISTS "recordatorios" (
-                "id"	INTEGER NOT NULL,
-                "fecha"	TEXT NOT NULL,
-                "fechanode"	TEXT NOT NULL,
-                "materia"	TEXT NOT NULL,
-                "actividad"	TEXT NOT NULL,
-                "mensaje"	TEXT,
-                "hora"	TEXT NOT NULL,
-				"canal" TEXT NOT NULL,
-                PRIMARY KEY("id" AUTOINCREMENT)
-            )`);
-			console.log("Conectado a la DB");
+		
+	}
+
+	conectar(){
+		return new Promise((resuelta, rechazada) => {
+			this.conexion = new sqlite3.Database("./database.db", (error) => {
+				if (error){
+					console.error(`Error al conectarse a la DB ${error}`);
+					rechazada(error);
+				}
+				else {
+					this.conexion.run(`CREATE TABLE IF NOT EXISTS "recordatorios" (
+						"id"	INTEGER NOT NULL,
+						"fecha"	TEXT NOT NULL,
+						"fechanode"	TEXT NOT NULL,
+						"materia"	TEXT NOT NULL,
+						"actividad"	TEXT NOT NULL,
+						"mensaje"	TEXT,
+						"hora"	TEXT NOT NULL,
+						"canal" TEXT NOT NULL,
+						PRIMARY KEY("id" AUTOINCREMENT)
+					)`);
+					console.log("Conectado a la DB");
+					resuelta(this.conexion);
+				}
+			});
 		});
 	}
 
