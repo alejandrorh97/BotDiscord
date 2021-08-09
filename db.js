@@ -102,10 +102,10 @@ class DB {
 	updateRecordatorio({ id, fecha, fechanode, materia, actividad, mensaje, hora, canal}) {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.run(
-				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ?, canal = ? WHERE id = ?",
+				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ?, canal = ? WHERE id = ?;",
 				[fecha, fechanode, materia, actividad, mensaje, hora,canal, id],
 				(error) => {
-					if (err) {
+					if (error) {
 						console.error(`Hubo un error al actualizar el recordatorio: ${error}`);
                         rechazada(error);
 					}
