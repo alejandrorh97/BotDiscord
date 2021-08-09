@@ -66,9 +66,14 @@ module.exports = {
         colector.on('collect', msj => {
             var contenido = msj.content;
             if (!isNaN(contenido)) {
-                colector.stop();
-                msj.delete();
-                bandera = false;
+                if (parseInt(contenido, 10) > 0 && parseInt(contenido, 10) < pos) {
+                    colector.stop();
+                    msj.delete();
+                    bandera = false;
+                } else {
+                    mensaje.reply("A ingresado una actividad no valida");
+                    bandera = true;
+                }
             } else {
                 mensaje.reply('Debe ingresar la posicion que desea en numero')
                 msj.delete();
