@@ -79,7 +79,9 @@ module.exports = {
         }
         //preparamos los datos
         materia = mensaje.mentions.roles.first().toString();
-        donde = mensaje.mentions.channels.first().id;
+        var idcanal = mensaje.mentions.channels.first().id;
+        var usuario = mensaje.author.username
+        donde = mensaje.mentions.channels.first().toString();
         fecha = fecha.join('').split('/');
         recordatorio = recordatorio.join(' ');
         nota = nota.join(' ');
@@ -94,7 +96,9 @@ module.exports = {
                 actividad: recordatorio,
                 mensaje: nota,
                 hora: '00:00',
-                canal: donde
+                canal: donde,
+                idcanal: idcanal,
+                usuario: usuario
             }
         );
         mensaje.reply(`Se ha guardado tu recordatorio para ${fecha.toISOString().slice(0,10)}`);

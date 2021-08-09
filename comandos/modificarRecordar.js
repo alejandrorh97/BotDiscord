@@ -33,7 +33,7 @@ module.exports = {
 
         for (var rol of cliente.reacciones.values()) {
             if (rol !== mensaje.mentions.roles.first().name) {
-                mensaje.reply(`Solo puedes agregar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
+                mensaje.reply(`Solo puedes modificar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
                 return;
             }
         }
@@ -98,7 +98,7 @@ module.exports = {
                     //Colecta la modificacion
                     var colector = new MessageCollector(mensaje.channel, filter, {
                         max: 1,
-                        time: 1000 * 60,
+                        time: 1000 * 90,
                     });
 
                     colector.on('collect', msj => {
@@ -112,7 +112,7 @@ module.exports = {
                             respuestaMensaje = await respuesta;
                             respuestaMensaje.delete();
                             if (estado === "time") {
-                                mensaje.reply("Haz tardado demasiado en ingresar los nombre, comando cancelado :skull_crossbones:");
+                                mensaje.reply("Haz tardado demasiado en ingresar los cambios a realizar, comando cancelado :skull_crossbones:");
                                 return;
                             }
 
@@ -170,7 +170,11 @@ module.exports = {
                             }
 
                             var id = informacion[0];
+                            var idcanal = donde[0].split("<#");
+                            idcanal = idcanal[1].split(">");
+                            idcanal = idcanal[0];
                             donde = donde[0];
+                            var usuario = mensaje.author.username
                             fecha = fecha.join('').split('/');
                             recordatorio = recordatorio.join(' ');
                             nota = nota.join(' ');
@@ -183,7 +187,9 @@ module.exports = {
                                 actividad: recordatorio,
                                 mensaje: nota,
                                 hora: '00:00',
-                                canal: donde
+                                canal: donde,
+                                idcanal: idcanal,
+                                usuario: usuario
                             });
                             mensaje.reply(`Se han guardado los cambios para tu recordatorio`);
                         } catch (error) {
