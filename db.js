@@ -22,6 +22,8 @@ class DB {
 						"mensaje"	TEXT,
 						"hora"	TEXT NOT NULL,
 						"canal" TEXT NOT NULL,
+						"idcanal" TEXT NOT NULL,
+						"usuario" TEXT NOT NULL,
 						PRIMARY KEY("id" AUTOINCREMENT)
 					)`);
 					console.log("Conectado a la DB");
@@ -82,11 +84,11 @@ class DB {
 		});
 	}
 
-	setRecordatorios({ fecha, fechanode, materia, actividad, mensaje, hora, canal}) {
+	setRecordatorios({ fecha, fechanode, materia, actividad, mensaje, hora, canal,idcanal,usuario}) {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.run(
-				`INSERT INTO recordatorios(fecha, fechanode, materia, actividad, mensaje, hora, canal) VALUES (?,?,?,?,?,?,?);`,
-				[fecha, fechanode, materia, actividad, mensaje, hora,canal],
+				`INSERT INTO recordatorios(fecha, fechanode, materia, actividad, mensaje, hora, canal,idcanal,usuario) VALUES (?,?,?,?,?,?,?,?,?);`,
+				[fecha, fechanode, materia, actividad, mensaje, hora,canal,idcanal,usuario],
 				(error) => {
 					if (error) {
 						console.error(`Error al guardar el recordatorio: ${error}`);
@@ -99,11 +101,11 @@ class DB {
 		});
 	}
 
-	updateRecordatorio({ id, fecha, fechanode, materia, actividad, mensaje, hora, canal}) {
+	updateRecordatorio({ id, fecha, fechanode, materia, actividad, mensaje, hora, canal,idcanal,usuario}) {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.run(
-				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ?, canal = ? WHERE id = ?;",
-				[fecha, fechanode, materia, actividad, mensaje, hora,canal, id],
+				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ?, canal = ?, idcanal = ?, usuario = ? WHERE id = ?;",
+				[fecha, fechanode, materia, actividad, mensaje, hora,canal,idcanal,usuario, id],
 				(error) => {
 					if (error) {
 						console.error(`Hubo un error al actualizar el recordatorio: ${error}`);
@@ -120,7 +122,7 @@ class DB {
     deleteRecordatorio({id}){
         return new Promise((resuelta, rechazada) => {
             this.conexion.run(
-                `DELETE FROM recordatorios WHERE id = ?`,
+                `DELETE FROM recordatorios WHERE id = ?;`,
                 [id],
                 (error) => {
                     if(error){
