@@ -3,7 +3,7 @@ const { prefix } = require('../config.json');
 const { MessageCollector } = require("discord.js");
 
 module.exports = {
-    nombre: 'eliminarrecordatorio',
+    nombre: 'delrecordatorio',
     descripcion: 'eliminar un recordatorio existente',
     args: true,
     admins: false,
