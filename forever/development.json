@@ -1,0 +1,10 @@
+{
+    "uid": "agente j",
+    "append": true,
+    "watch": true,
+    "script": "index.js",
+    "sourceDir": "/home/alejandro/proyectos/BotDiscord/",
+    "logFile": "/home/alejandro/proyectos/logs/forever.log",
+    "outFile": "/home/alejandro/proyectos/logs/out.log",
+    "errFile": "/home/alejandro/proyectos/logs/error.log"
+}

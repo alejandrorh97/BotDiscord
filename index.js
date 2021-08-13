@@ -142,7 +142,6 @@ cliente.on("messageReactionAdd", async (reaccion, usuario) => {
 				.get(server)
 				.members.cache.get(usuario.id);
 			var rol = cliente.reacciones.get(emoji);
-			console.log({emoji, quien, rol});
 			quien.roles.add(cliente.roles.get(rol));
 		}
 	} catch (error) {

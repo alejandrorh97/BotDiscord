@@ -7,7 +7,7 @@ module.exports = {
 			.channels.cache.get(canal)
 			.send(mensaje);
 	},
-	enviarRepuesta(mensajeds, mensaje){
+	enviarRespuesta(mensajeds, mensaje){
 		return mensajeds.channel.send(`<@${mensajeds.author.id}> ${mensaje}`);
 	},
 	enviarLog(cliente, error, lugar, quien){

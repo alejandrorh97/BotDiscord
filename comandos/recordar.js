@@ -1,6 +1,6 @@
 const DB = require('../db');
 const {prefix} = require('../config.json');
-const {enviarRepuesta, enviarLog} = require('../utils');
+const {enviarRespuesta, enviarLog} = require('../utils');
 
 module.exports = {
 	nombre: 'recordar',
@@ -45,36 +45,36 @@ module.exports = {
             }
             //validamos que esten los argumentos correctamente
             if (fecha.length === 0){
-                enviarRepuesta(mensaje, "Debes poner una fecha para que te recuerde");
+                enviarRespuesta(mensaje, "Debes poner una fecha para que te recuerde");
                 return;
             }
             if (fecha.length > 1) {
-                enviarRepuesta(mensaje, "Solo una fecha a la vez");
+                enviarRespuesta(mensaje, "Solo una fecha a la vez");
                 return;
             }
             if (recordatorio.length === 0){
-                enviarRepuesta(mensaje, "Debes poner un recordatorio");
+                enviarRespuesta(mensaje, "Debes poner un recordatorio");
                 return; 
             }
             if (materia.length === 0){
-                enviarRepuesta(mensaje, "Debes poner un rol de materia para recordarles");
+                enviarRespuesta(mensaje, "Debes poner un rol de materia para recordarles");
                 return; 
             }
             if (materia > 1) {
-                enviarRepuesta(mensaje, "Solo una materia a la vez");
+                enviarRespuesta(mensaje, "Solo una materia a la vez");
                 return;
             }
             if (donde.length === 0){
-                enviarRepuesta(mensaje, "Debes agregar un lugar a donde quieres que te mande el recordatorio");
+                enviarRespuesta(mensaje, "Debes agregar un lugar a donde quieres que te mande el recordatorio");
                 return;
             }
             if (donde.length > 1) {
-                enviarRepuesta(mensaje, "Solo un canal a la vez")
+                enviarRespuesta(mensaje, "Solo un canal a la vez")
                 return;
             }
             var materias = Array.from(cliente.reacciones.values()).find(materia => materia === mensaje.mentions.roles.first().name);
             if (!materias) {
-                enviarRepuesta(mensaje, `Solo puedes agregar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
+                enviarRespuesta(mensaje, `Solo puedes agregar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
                 return;
             }
 
@@ -102,7 +102,7 @@ module.exports = {
                     usuario: usuario
                 }
             );
-            enviarRepuesta(mensaje,`Se ha guardado tu recordatorio para ${fecha.toISOString().slice(0,10)}`);
+            enviarRespuesta(mensaje,`Se ha guardado tu recordatorio para ${fecha.toISOString().slice(0,10)}`);
         } catch (error) {
             console.error(`Error al procesar el comando ${this.nombre} \n${error}`);
 			enviarLog(cliente, error, this.nombre, mensaje.author.username);

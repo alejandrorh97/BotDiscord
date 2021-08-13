@@ -1,6 +1,6 @@
 const db = require("megadb");
 const { MessageEmbed } = require("discord.js");
-const { enviarRepuesta, enviarLog } = require("../utils");
+const { enviarRespuesta, enviarLog } = require("../utils");
 module.exports = {
 	nombre: "materias",
 	descripcion: "Muestra las materias del ciclo actual",
@@ -23,7 +23,7 @@ module.exports = {
 				mensaje.channel.send({embeds: [embebido]});
 			}
 			else {
-				enviarRepuesta(mensaje, "No hay materia actualmente");
+				enviarRespuesta(mensaje, "No hay materia actualmente");
 			}
 
 		} catch (error) {

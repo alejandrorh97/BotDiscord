@@ -1,5 +1,5 @@
 const { MessageCollector } = require("discord.js");
-const { enviarRepuesta, enviarLog } = require("../utils");
+const { enviarRespuesta, enviarLog } = require("../utils");
 
 module.exports = {
 	nombre: "rifar",
@@ -29,14 +29,14 @@ module.exports = {
                 }
             }
             if (isNaN(grupos)) {
-                enviarRepuesta(
+                enviarRespuesta(
                     mensaje,
                     "Ingresa una cantidad de grupos valido :rage:"
                 );
                 return;
             }
             if (isNaN(cuantos)) {
-                enviarRepuesta(
+                enviarRespuesta(
                     mensaje,
                     "Ingresa una cantidad de personas valido :rage:"
                 );
@@ -44,7 +44,7 @@ module.exports = {
             }
             var total = cuantos * grupos;
     
-            var respuesta = enviarRepuesta(
+            var respuesta = enviarRespuesta(
                 mensaje,
                 `Ingresa ${total} nombres que formaran los grupos, si faltan usa el comodin "no hay mas" para empezar a rifar`
             );
@@ -71,7 +71,7 @@ module.exports = {
                 //este if es para controlar si se acabo el tiempo y mandarle el mensaje
                 respuestaMensaje.delete();
                 if (estado === "time") {
-                    enviarRepuesta(
+                    enviarRespuesta(
                         mensaje,
                         "Haz tardado demasiado en ingresar los nombre, comando cancelado :skull_crossbones:"
                     );
@@ -86,7 +86,7 @@ module.exports = {
                     quienes.push(m[1].content);
                     promesas.push(m[1].delete());
                 }
-                respuestaMensaje = await enviarRepuesta(
+                respuestaMensaje = await enviarRespuesta(
                     mensaje,
                     "Estoy viendo como se distribuyen los grupos espera... :thinking:"
                 );

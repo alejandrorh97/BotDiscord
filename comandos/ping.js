@@ -6,7 +6,7 @@
 
 	borrable: se usa para borrar el mensaje de la persona y dejar un poco limpio
 */
-const {enviarRepuesta, enviarMensaje} = require('../utils');
+const {enviarRespuesta, enviarLog} = require('../utils');
 
 module.exports = {
 	nombre: 'ping',
@@ -17,6 +17,11 @@ module.exports = {
 	borrable: false,
 	usos: "",
 	ejecutar(cliente,mensaje, args) {
-		mensaje.channel.send('Pong.');
+		try {
+			enviarRespuesta(mensaje, 'Pong.');
+		} catch (error) {
+			console.error(`Error al procesar el comando ${this.nombre} \n${error}`);
+			enviarLog(cliente, error, this.nombre, mensaje.author.username);
+		}
 	}
 };

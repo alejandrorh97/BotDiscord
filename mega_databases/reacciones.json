@@ -1,6 +1,21 @@
 {
   "materias": [
     {
+      "materia": "ya me aburri 35",
+      "emoji": "🍴",
+      "rol": "aburrido35"
+    },
+    {
+      "materia": "ya me aburri 2",
+      "emoji": "🤟",
+      "rol": "aburrido"
+    },
+    {
+      "materia": "ya me aburri",
+      "emoji": "💩",
+      "rol": "aburrido"
+    },
+    {
       "materia": "prueba2",
       "emoji": "👀",
       "rol": "prueba2"

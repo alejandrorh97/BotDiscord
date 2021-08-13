@@ -1,7 +1,7 @@
 var db = require("megadb");
 var { canalReaccionesId, server } = require("../config.json");
 var { Permissions } = require("discord.js");
-const {enviarLog} = require('../utils');
+const {enviarLog, enviarRespuesta} = require('../utils');
 
 module.exports = {
 	nombre: "crearmateria",
@@ -38,7 +38,7 @@ module.exports = {
 			nombre = nombre.join(" ");
 
 			if (nombre.length === 0 || rol.length === 0 || emoji.length === 0) {
-				message.reply(`No has ingresado correctamente los argumentos
+				mensaje.reply(`No has ingresado correctamente los argumentos
 				${this.usos}`);
 			}
 			let roles = [];
@@ -56,7 +56,6 @@ module.exports = {
 					);
 					cliente.roles.set(respuesta['name'], respuesta['id']);
 					roles.push({type: 'role', id: respuesta['id'], allow: [Permissions.FLAGS.VIEW_CHANNEL]});
-					console.log(cliente.roles);
 				}
 			}
 			roles.push({type: 'member', id: cliente.user.id, allow: [Permissions.FLAGS.VIEW_CHANNEL]});
@@ -88,7 +87,7 @@ module.exports = {
 				permissionOverwrites: roles,
 			});
 			voz.setParent(categoria.id);
-			mensaje.reply("Se han creado las materias y todo lo demas");
+			enviarRespuesta(mensaje, "Se han creado las materias y todo lo demas");
 		}
 		catch(error) {
 			console.error(`Error al procesar el comando crearmaterias \n${error}`);
