@@ -58,6 +58,7 @@ cliente.on("ready", async () => {
 		mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(date)}`,
 	});*/
 		console.log("Ya estamos conectado a discord");
+		console.log(cliente.roles);
 	} catch (error) {
 		console.error(`No se ha podido cargar completamente el bot\n${error}`);
 	}
@@ -66,7 +67,6 @@ cliente.on("ready", async () => {
 cliente.on("messageCreate", async (mensaje) => {
 	try {
 		if (mensaje.author.bot) return; //si es mensaje de un bot se ignora
-
 		let contenido = mensaje.content;
 		if (contenido.startsWith(prefix)) {
 			//extraer los argumentos
@@ -135,6 +135,7 @@ cliente.on("messageCreate", async (mensaje) => {
 });
 
 cliente.on("messageReactionAdd", async (reaccion, usuario) => {
+	if (usuario.bot) return;
 	try {
 		if (reaccion.message.id === mensajereaccion) {
 			var emoji = reaccion._emoji.name;
@@ -142,6 +143,7 @@ cliente.on("messageReactionAdd", async (reaccion, usuario) => {
 				.get(server)
 				.members.cache.get(usuario.id);
 			var rol = cliente.reacciones.get(emoji);
+			console.log({emoji, quien, rol});
 			quien.roles.add(cliente.roles.get(rol));
 		}
 	} catch (error) {
@@ -157,7 +159,10 @@ cliente.on("messageReactionAdd", async (reaccion, usuario) => {
 	}
 });
 
+
+
 cliente.on("messageReactionRemove", async (reaccion, usuario) => {
+	if (usuario.bot) return;
 	try {
 		if (reaccion.message.id === mensajereaccion) {
 			var emoji = reaccion._emoji.name;
@@ -178,6 +183,18 @@ cliente.on("messageReactionRemove", async (reaccion, usuario) => {
                 \n--------------------------------------`,
 		});
 	}
+});
+
+cliente.on('roleDelete', (rol) =>{
+	cliente.roles.delete(rol.name);
+});
+
+cliente.on('roleCreate', (rol) =>{
+	cliente.roles.set(rol.name, rol.id);
+});
+
+cliente.on('roleUpdate', (rol) => {
+	console.log(rol);
 });
 
 cliente.login(token);

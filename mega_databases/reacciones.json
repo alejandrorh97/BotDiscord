@@ -1,14 +1,5 @@
 {
   "materias": [
-    {
-      "materia": "prueba ",
-      "emoji": "👀",
-      "rol": "prueba"
-    },
-    {
-      "materia": "prueba 13",
-      "emoji": "😩",
-      "rol": "prueba13"
-    }
+
   ]
 }
