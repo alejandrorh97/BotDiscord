@@ -1,3 +1,5 @@
+const {canallogs,server} = require('./config.json')
+
 module.exports = {
 	enviarMensaje({ cliente, server, canal, mensaje }) {
 		cliente.guilds.cache
@@ -5,6 +7,19 @@ module.exports = {
 			.channels.cache.get(canal)
 			.send(mensaje);
 	},
+	enviarRepuesta(mensajeds, mensaje){
+		return mensajeds.channel.send(`<@${mensajeds.author.id}> ${mensaje}`);
+	},
+	enviarLog(cliente, error, lugar, quien){
+		let mensaje = "-------------------------------------------"
+		mensaje = `\n**Error**: ${error} \n**Lugar**: ${lugar}`;
+		if (quien) mensaje += `\n**Quien:** ${quien}`;
+		cliente.guilds.cache
+			.get(server)
+			.channels.cache.get(canallogs)
+			.send(mensaje);
+	},
+
 	formatearHora(date) {
 		var hours = date.getHours();
 		var minutes = date.getMinutes();

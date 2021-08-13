@@ -58,7 +58,6 @@ cliente.on("ready", async () => {
 		mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(date)}`,
 	});*/
 		console.log("Ya estamos conectado a discord");
-		console.log(cliente.roles);
 	} catch (error) {
 		console.error(`No se ha podido cargar completamente el bot\n${error}`);
 	}
@@ -79,7 +78,7 @@ cliente.on("messageCreate", async (mensaje) => {
 				if (!borrable) {
 					await mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
 				}
-				mensaje.reply(`No era un comando :face_with_monocle:
+				mensaje.channel.send(`<@${mensaje.author.id}> No era un comando :face_with_monocle:
             \nUsa el comando ${prefix}ayuda para ver los comandos disponibles`);
 				return;
 			}
@@ -87,8 +86,8 @@ cliente.on("messageCreate", async (mensaje) => {
 			let comando = cliente.comandos.get(cual);
 
 			if (comando.soloServer && mensaje.channel.type === "dm") {
-				mensaje.reply(
-					"Solo puedes usar este comando en un servidor, no en mensaje privado :face_with_monocle:"
+				mensaje.channel.send(
+					`<@${mensaje.author.id}> Solo puedes usar este comando en un servidor, no en mensaje privado :face_with_monocle:`
 				);
 				return;
 			}
@@ -100,8 +99,8 @@ cliente.on("messageCreate", async (mensaje) => {
 					if (!borrable) {
 						await mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
 					}
-					mensaje.reply(
-						"Me dijeron que no te hiciera caso :wink: :ok_hand:"
+					mensaje.channel.send(
+						`<@${mensaje.author.id}>Me dijeron que no te hiciera caso :wink: :ok_hand:`
 					);
 				}
 			}
@@ -113,7 +112,7 @@ cliente.on("messageCreate", async (mensaje) => {
 
 			//si el comando necesita argumentos y no se envio nada
 			if (comando.args && !argumentos.length) {
-				mensaje.reply(`No has dado ningun argumento :triumph:
+				mensaje.channel.send(`<@${mensaje.author.id}> No has dado ningun argumento :triumph:
             \nEsta es la forma de usar el comando:\n ${comando.usos}`);
 				return;
 			}
@@ -122,7 +121,7 @@ cliente.on("messageCreate", async (mensaje) => {
 		}
 	} catch (error) {
 		console.error(`Hubo un error al procesar el mensaje ${error}`);
-		mensaje.reply(`Hubo un error al procesar el comando :man_shrugging:`);
+		mensaje.channel.send(`<@${mensaje.author.id}> Hubo un error al procesar el comando :man_shrugging:`);
 		enviarMensaje({
 			cliente: cliente,
 			server: server,
@@ -160,7 +159,6 @@ cliente.on("messageReactionAdd", async (reaccion, usuario) => {
 });
 
 
-
 cliente.on("messageReactionRemove", async (reaccion, usuario) => {
 	if (usuario.bot) return;
 	try {
@@ -194,7 +192,7 @@ cliente.on('roleCreate', (rol) =>{
 });
 
 cliente.on('roleUpdate', (rol) => {
-	console.log(rol);
+
 });
 
 cliente.login(token);

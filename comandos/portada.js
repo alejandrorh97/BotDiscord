@@ -12,13 +12,14 @@ module.exports = {
             mensaje.author.id === "240558868038549504" ||
             mensaje.author.id === "688544642408513573"
         ) {
-            txt = "Aqui tiene amo y señor ";
+            txt = `Aqui tiene amo y señor <@${mensaje.author.id}>`;
         } else {
-            txt = "Aqui tenes tu portada ";
+            txt = `Aqui tenes tu portada <@${mensaje.author.id}`;
         }
         txt += "<:giveplz:871890147149496340>";
-        mensaje.reply(txt, {
-            files: ["./recursos/portada.docx"],
-        });
+        mensaje.channel.send({
+            content: txt,
+            files: ["./recursos/portada.docx"]
+        })
     },
 };

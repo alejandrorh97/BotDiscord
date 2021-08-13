@@ -1,6 +1,7 @@
 var db = require("megadb");
-var { canalreacciones: canalReaccionesId, server } = require("../config.json");
+var { canalReaccionesId, server } = require("../config.json");
 var { Permissions } = require("discord.js");
+const {enviarLog} = require('../utils');
 
 module.exports = {
 	nombre: "crearmateria",
@@ -90,7 +91,8 @@ module.exports = {
 			mensaje.reply("Se han creado las materias y todo lo demas");
 		}
 		catch(error) {
-		
+			console.error(`Error al procesar el comando crearmaterias \n${error}`);
+			enviarLog(cliente, error, "crearmaterias", mensaje.author.username);
 		}
 }
 

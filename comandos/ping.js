@@ -6,6 +6,7 @@
 
 	borrable: se usa para borrar el mensaje de la persona y dejar un poco limpio
 */
+const {enviarRepuesta, enviarMensaje} = require('../utils');
 
 module.exports = {
 	nombre: 'ping',
