@@ -10,14 +10,13 @@ module.exports = {
     soloServer: false,
     usos: "[comando]",
     ejecutar(cliente, mensaje, args) {
-        let datos = [];
         let { comandos } = mensaje.client;
         let embebido = new MessageEmbed();
         if (!args.length) {
             embebido.setTitle("Comandos disponibles");
             for (let comando of comandos) {
                 //ver si solo admins
-                if (comando[1].admins && !mensaje.member.hasPermission('ADMINISTRATOR')) {
+                if (comando[1].admins && !mensaje.member.permissions.has('ADMINISTRATOR')) {
                     continue;
                 }
 
@@ -42,13 +41,13 @@ module.exports = {
                 embebido.addField("No existe el comando", "");
             }
         }
-		if(mensaje.member.hasPermission('ADMINISTRATOR')){
+		if(mensaje.member.permissions.has('ADMINISTRATOR')){
 			embebido.setColor("RED");
 		}
 		else {
 			embebido.setColor("BLUE");
 		}
 		
-        mensaje.channel.send(embebido);
+        mensaje.channel.send({embeds: [embebido]});
     },
 };

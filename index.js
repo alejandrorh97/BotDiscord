@@ -9,11 +9,12 @@ const {
 const fs = require("fs");
 const { enviarMensaje } = require("./utils");
 const db = require("megadb");
-const cron = require('node-cron');
+const cron = require("node-cron");
 
 //Creamos los objetos necesarios
 const cliente = new Discord.Client({
 	partials: ["MESSAGE", "CHANNEL", "REACTION"],
+	intents: new Discord.Intents(32767),
 });
 
 cliente.comandos = new Discord.Collection();
@@ -32,8 +33,8 @@ cliente.on("ready", async () => {
 	//cargar roles y guardar los id
 	try {
 		cliente.user.setPresence({
-			activity: { type: "LISTENING", name: `Comandos en ${prefix}` },
-			status: "online",
+			activities: [{ name: `comandos en ${prefix}`, type: "LISTENING" }],
+			status: "online"
 		});
 
 		cliente.roles = new Discord.Collection();
@@ -62,7 +63,7 @@ cliente.on("ready", async () => {
 	}
 });
 
-cliente.on("message", async (mensaje) => {
+cliente.on("messageCreate", async (mensaje) => {
 	try {
 		if (mensaje.author.bot) return; //si es mensaje de un bot se ignora
 
@@ -94,7 +95,7 @@ cliente.on("message", async (mensaje) => {
 
 			//controlar que los comandos que solo admins pueden ejecutar
 			if (comando.admins) {
-				var permisos = mensaje.member.hasPermission("ADMINISTRATOR");
+				var permisos = mensaje.member.permissions.has("ADMINISTRATOR");
 				if (!permisos) {
 					if (!borrable) {
 						await mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio

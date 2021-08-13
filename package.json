@@ -8,13 +8,13 @@
   },
   "author": "Alejandro Rivas",
   "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  },
   "dependencies": {
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.1.0",
     "megadb": "^3.4.0",
     "node-cron": "^3.0.0",
     "sqlite3": "^5.0.2"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.12"
   }
 }

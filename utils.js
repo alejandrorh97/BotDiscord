@@ -1,5 +1,3 @@
-const sqlite = require("sqlite3");
-
 module.exports = {
 	enviarMensaje({ cliente, server, canal, mensaje }) {
 		cliente.guilds.cache
