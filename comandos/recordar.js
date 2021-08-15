@@ -104,8 +104,13 @@ module.exports = {
             );
             enviarRespuesta(mensaje,`Se ha guardado tu recordatorio para ${fecha.toISOString().slice(0,10)}`);
         } catch (error) {
-            console.error(`Error al procesar el comando ${this.nombre} \n${error}`);
-			enviarLog(cliente, error, this.nombre, mensaje.author.username);
+            enviarLog({
+                cliente: cliente,
+                error: error,
+                lugar: "comando -> recordar",
+                quien: mensaje.author.username,
+                comando: mensaje.content
+            });
         }
 	}
 

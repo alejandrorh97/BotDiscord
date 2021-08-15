@@ -1,15 +1,8 @@
 const Discord = require("discord.js");
-const {
-	prefix,
-	token,
-	server,
-	canallogs,
-	mensajereaccion,
-} = require("./config.json");
+const { prefix, token, server, mensajereaccion } = require("./config.json");
 const fs = require("fs");
-const { enviarMensaje } = require("./utils");
+const { enviarLog } = require("./utils");
 const db = require("megadb");
-const cron = require("node-cron");
 
 //Creamos los objetos necesarios
 const cliente = new Discord.Client({
@@ -34,7 +27,7 @@ cliente.on("ready", async () => {
 	try {
 		cliente.user.setPresence({
 			activities: [{ name: `comandos en ${prefix}`, type: "LISTENING" }],
-			status: "online"
+			status: "online",
 		});
 
 		cliente.roles = new Discord.Collection();
@@ -58,8 +51,17 @@ cliente.on("ready", async () => {
 		mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(date)}`,
 	});*/
 		console.log("Ya estamos conectado a discord");
+		fs.appendFile(
+			"historialComandos.txt",
+			`---------------------${new Date().toLocaleString()}`,
+			(error) => {
+				if (error) console.error(error);
+			}
+		);
 	} catch (error) {
-		console.error(`No se ha podido cargar completamente el bot\n${error}`);
+		console.error(
+			`index: No se ha podido cargar completamente el bot\n${error}`
+		);
 	}
 });
 
@@ -78,7 +80,8 @@ cliente.on("messageCreate", async (mensaje) => {
 				if (!borrable) {
 					await mensaje.delete(); //se borra el mensaje del que lo envio para mantener algo limpio
 				}
-				mensaje.channel.send(`<@${mensaje.author.id}> No era un comando :face_with_monocle:
+				mensaje.channel
+					.send(`<@${mensaje.author.id}> No era un comando :face_with_monocle:
             \nUsa el comando ${prefix}ayuda para ver los comandos disponibles`);
 				return;
 			}
@@ -112,25 +115,33 @@ cliente.on("messageCreate", async (mensaje) => {
 
 			//si el comando necesita argumentos y no se envio nada
 			if (comando.args && !argumentos.length) {
-				mensaje.channel.send(`<@${mensaje.author.id}> No has dado ningun argumento :triumph:
+				mensaje.channel
+					.send(`<@${mensaje.author.id}> No has dado ningun argumento :triumph:
             \nEsta es la forma de usar el comando:\n ${comando.usos}`);
 				return;
 			}
-
 			comando.ejecutar(cliente, mensaje, argumentos);
 		}
 	} catch (error) {
-		console.error(`Hubo un error al procesar el mensaje ${error}`);
-		mensaje.channel.send(`<@${mensaje.author.id}> Hubo un error al procesar el comando :man_shrugging:`);
-		enviarMensaje({
+		mensaje.channel.send(
+			`<@${mensaje.author.id}> Hubo un error al procesar el comando :man_shrugging:`
+		);
+		enviarLog({
 			cliente: cliente,
-			server: server,
-			canal: canallogs,
-			mensaje: `Comando Ejecutado ${mensaje.content}
-                \n\tError ${error}
-                \n--------------------------------------`,
+			error: error,
+			lugar: "index.mensajeRecibo",
+			quien: mensaje.author.username,
 		});
 	}
+	fs.appendFile(
+		"historialComandos.txt",
+		`\n${new Date().toLocaleString()} Quien: ${
+			mensaje.author.username
+		} Comando: ${mensaje.content}`,
+		(error) => {
+			if (error) console.error(error);
+		}
+	);
 });
 
 cliente.on("messageReactionAdd", async (reaccion, usuario) => {
@@ -145,18 +156,14 @@ cliente.on("messageReactionAdd", async (reaccion, usuario) => {
 			quien.roles.add(cliente.roles.get(rol));
 		}
 	} catch (error) {
-		console.error(`1: Hubo un error al procesar la reaccion ${error}`);
-		enviarMensaje({
+		enviarLog({
 			cliente: cliente,
-			server: server,
-			canal: canallogs,
-			mensaje: `1: Error al tratar de agregar un rol ${usuario.username}
-                \n\tError ${error}
-                \n--------------------------------------`,
+			error: error,
+			lugar: "index.darRol",
+			quien: usuario.username,
 		});
 	}
 });
-
 
 cliente.on("messageReactionRemove", async (reaccion, usuario) => {
 	if (usuario.bot) return;
@@ -170,28 +177,13 @@ cliente.on("messageReactionRemove", async (reaccion, usuario) => {
 			quien.roles.remove(cliente.roles.get(rol));
 		}
 	} catch (error) {
-		console.error(`1: Hubo un error al procesar la reaccion ${error}`);
-		enviarMensaje({
+		enviarLog({
 			cliente: cliente,
-			server: server,
-			canal: canallogs,
-			mensaje: `1: Error al tratar de agregar un rol ${usuario.username}
-                \n\tError ${error}
-                \n--------------------------------------`,
+			error: error,
+			lugar: "index.quitarRol",
+			quien: usuario.username,
 		});
 	}
-});
-
-cliente.on('roleDelete', (rol) =>{
-	cliente.roles.delete(rol.name);
-});
-
-cliente.on('roleCreate', (rol) =>{
-	cliente.roles.set(rol.name, rol.id);
-});
-
-cliente.on('roleUpdate', (rol) => {
-
 });
 
 cliente.login(token);

@@ -9,7 +9,7 @@ module.exports = {
     admins: false,
     borrable: true,
     soloServer: false,
-    usos: "[comando]",
+    usos: "comando",
     ejecutar(cliente, mensaje, args) {
         try {
             let { comandos } = mensaje.client;
@@ -29,7 +29,7 @@ module.exports = {
                 }
                 embebido.addField(
                     "Mas informacion",
-                    `Utiliza ${prefix}ayuda [comando] para obtener mas informacion sobre ese comando`
+                    `Utiliza ${prefix}ayuda comando para obtener mas informacion sobre ese comando`
                 );
             } else if (args.length >= 2) {
                 embebido.addField("Error", "Muchos parametros solo 1");
@@ -52,8 +52,13 @@ module.exports = {
             
             mensaje.channel.send({embeds: [embebido]});
         } catch (error) {
-            console.error(`Error al procesar el comando ${this.nombre} \n${error}`);
-			enviarLog(cliente, error, this.nombre, mensaje.author.username);
+            enviarLog({
+				cliente: cliente,
+				lugar: "comando -> ayuda",
+				error: error,
+				quien: mensaje.author.username,
+				comando: mensaje.content
+			})
         }
     }
 };

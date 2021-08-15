@@ -90,8 +90,13 @@ module.exports = {
 			enviarRespuesta(mensaje, "Se han creado las materias y todo lo demas");
 		}
 		catch(error) {
-			console.error(`Error al procesar el comando crearmaterias \n${error}`);
-			enviarLog(cliente, error, "crearmaterias", mensaje.author.username);
+			enviarLog({
+				cliente: cliente,
+				lugar: "comando -> crearMateria",
+				error: error,
+				quien: mensaje.author.username,
+				comando: mensaje.content
+			})
 		}
 }
 
