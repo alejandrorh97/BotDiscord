@@ -1,6 +1,8 @@
 const DB = require('../db');
 const { prefix } = require('../config.json');
 const { MessageCollector } = require("discord.js");
+const { enviarRespuesta, enviarLog, enviarMensaje } = require('../utils');
+
 
 module.exports = {
     nombre: 'modrecordatorio',
@@ -11,89 +13,89 @@ module.exports = {
     borrable: true,
     usos: '-m [rol de la materia]',
     async ejecutar(cliente, mensaje, args) {
-        var materia = [];
-        var cual = '';
+        try {
+            var materia = [];
+            var cual = '';
 
-        for (const arg of args) {
-            if (arg.startsWith('-')) {
-                cual = arg;
-                continue;
+            for (const arg of args) {
+                if (arg.startsWith('-')) {
+                    cual = arg;
+                    continue;
+                }
+                switch (cual) {
+                    case '-m':
+                        materia.push(arg);
+                        break;
+                }
             }
-            switch (cual) {
-                case '-m':
-                    materia.push(arg);
-                    break;
-            }
-        }
 
-        if (materia > 1) {
-            mensaje.reply("Solo una materia a la vez");
-            return;
-        }
-
-        for (var rol of cliente.reacciones.values()) {
-            if (rol !== mensaje.mentions.roles.first().name) {
-                mensaje.reply(`Solo puedes modificar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
+            if (materia > 1) {
+                enviarRespuesta(mensaje, "Solo una materia a la vez");
                 return;
             }
-        }
-        var db = new DB();
-        db.conectar()
-        var contenido = await db.getRecordatoriosMateria(mensaje.mentions.roles.first().toString());
-        var pos = 1;
-        materia = mensaje.mentions.roles.first().name;
-        var bandera = false;
-        var msj = ` Seleccione el recordatorio a modificar para la materia **${materia}**:\n`;
-        //Se imprimen las actividades por la materia mencionada
-        var informacion = []
-        for (var i of contenido) {
-            m = Object.values(i)
-            msj = msj + (`**${pos}-**Fecha:${m[1]}\tHora:${m[6]}\tActividad:${m[4]}\tMensaje:${m[5]}\tCanal: ${m[7]}\n`);
-            pos++
-            informacion.push(m);
-        }
-        var respuesta = mensaje.reply(msj);
 
-        var filter = (m) => {
-            return m.author.id === mensaje.author.id;
-        };
+            var materias = Array.from(cliente.reacciones.values()).find(materia => materia === mensaje.mentions.roles.first().name);
+            if (!materias) {
+                enviarRespuesta(mensaje, `Solo puedes modificar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
+                return;
+            }
+            var db = new DB();
+            db.conectar()
+            var contenido = await db.getRecordatoriosMateria(mensaje.mentions.roles.first().toString());
+            var pos = 1;
+            materia = mensaje.mentions.roles.first().name;
+            var bandera = false;
+            var msj = ` Seleccione el recordatorio a modificar para la materia **${materia}**:\n`;
+            //Se imprimen las actividades por la materia mencionada
+            var informacion = []
+            for (var i of contenido) {
+                m = Object.values(i)
+                msj = msj + (`**${pos}-**Fecha:${m[1]}\tHora:${m[6]}\tActividad:${m[4]}\tMensaje:${m[5]}\tCanal: ${m[7]}\n`);
+                pos++
+                informacion.push(m);
+            }
+            var respuesta = enviarRespuesta(mensaje, msj);
 
-        var colector = new MessageCollector(mensaje.channel, filter, {
-            max: 1,
-            time: 1000 * 60,
-        });
-        //Colecta la posicion
-        colector.on('collect', msj => {
-            var contenido = msj.content;
-            if (!isNaN(contenido)) {
-                if (parseInt(contenido, 10) > 0 && parseInt(contenido, 10) < pos) {
-                    colector.stop();
-                    msj.delete();
-                    bandera = false;
+            var filter = (m) => {
+                return m.author.id === mensaje.author.id;
+            };
+
+            var colector = new MessageCollector(mensaje.channel, {
+                filter: filter,
+                max: 1,
+                time: 1000 * 60,
+            });
+            //Colecta la posicion
+            colector.on('collect', msj => {
+                var contenido = msj.content;
+                if (!isNaN(contenido)) {
+                    if (parseInt(contenido, 10) > 0 && parseInt(contenido, 10) < pos) {
+                        colector.stop();
+                        msj.delete();
+                        bandera = false;
+                    } else {
+                        enviarRespuesta(mensaje, "A ingresado una actividad no valida");
+                        bandera = true;
+                    }
                 } else {
-                    mensaje.reply("A ingresado una actividad no valida");
+                    enviarRespuesta(mensaje, 'Debe ingresar la posicion que desea en numero')
+                    msj.delete();
                     bandera = true;
                 }
-            } else {
-                mensaje.reply('Debe ingresar la posicion que desea en numero')
-                msj.delete();
-                bandera = true;
-            }
-        });
+            });
 
-        colector.on("end", async (mensajes, estado) => {
-            try {
+            colector.on("end", async (mensajes, estado) => {
 
                 var respuestaMensaje = await respuesta;
 
                 respuestaMensaje.delete();
                 if (bandera === false) {
                     if (estado === "time") {
-                        mensaje.reply("Haz tardado demasiado en ingresar los nombre, comando cancelado :skull_crossbones:");
+                        enviarRespuesta(mensaje, "Haz tardado demasiado en ingresar los nombre, comando cancelado :skull_crossbones:");
                         return;
                     }
 
-                    respuesta = mensaje.reply(`\nIngresa las modificaciones de la manera siguiente -f [fecha del recordatorio] -r [recordatorio] -n [nota del recordatorio] -d [donde enviar el mensaje]`);
+                    respuesta = enviarRespuesta(mensaje, `\nIngresa las modificaciones de la manera siguiente -f [fecha del recordatorio] -r [recordatorio] -n [nota del recordatorio] -d [donde enviar el mensaje]`);
                     var posicion = "";
                     for (var m of mensajes) {
                         posicion = (m[1].content);
@@ -101,7 +103,8 @@ module.exports = {
                     //Guarda la actividad seleccionada
                     informacion = informacion[(posicion - 1)];
                     //Colecta la modificacion
-                    var colector = new MessageCollector(mensaje.channel, filter, {
+                    var colector = new MessageCollector(mensaje.channel, {
+                        filter:filter,
                         max: 1,
                         time: 1000 * 90,
                     });
@@ -113,11 +116,11 @@ module.exports = {
                     });
 
                     colector.on("end", async (msj, estado) => {
-                        try {
+                        
                             respuestaMensaje = await respuesta;
                             respuestaMensaje.delete();
                             if (estado === "time") {
-                                mensaje.reply("Haz tardado demasiado en ingresar los cambios a realizar, comando cancelado :skull_crossbones:");
+                                enviarRespuesta(mensaje, "Haz tardado demasiado en ingresar los cambios a realizar, comando cancelado :skull_crossbones:");
                                 return;
                             }
 
@@ -157,7 +160,7 @@ module.exports = {
                                 fecha.push(informacion[1]);
                             }
                             if (fecha.length > 1) {
-                                mensaje.reply("Solo una fecha a la vez");
+                                enviarRespuesta(mensaje, "Solo una fecha a la vez");
                                 return;
                             }
                             if (recordatorio.length === 0) {
@@ -170,7 +173,7 @@ module.exports = {
                                 donde.push(informacion[7]);
                             }
                             if (donde.length > 1) {
-                                mensaje.reply("Solo un canal a la vez")
+                                enviarRespuesta(mensaje, "Solo un canal a la vez")
                                 return;
                             }
 
@@ -196,17 +199,16 @@ module.exports = {
                                 idcanal: idcanal,
                                 usuario: usuario
                             });
-                            mensaje.reply(`Se han guardado los cambios para tu recordatorio`);
-                        } catch (error) {
-                            console.log(error);
-                        }
+                            enviarRespuesta(mensaje, `Se han guardado los cambios para tu recordatorio`);
 
                     });
                 }
-            } catch (error) {
-                console.log(error);
-            }
-        });
+            });
+        } catch (error) {
+            console.error(`Error al procesar el comando ${this.nombre} \n${error}`);
+			enviarLog(cliente, error, this.nombre, mensaje.author.username);
+        }
+
 
     }
 };
