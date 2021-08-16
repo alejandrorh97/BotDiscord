@@ -1,5 +1,5 @@
 var db = require("megadb");
-var { canalReaccionesId, server } = require("../config.json");
+var { prefix, canalReaccionesId, server } = require("../config.json");
 var { Permissions } = require("discord.js");
 const {enviarLog, enviarRespuesta} = require('../utils');
 
@@ -10,7 +10,8 @@ module.exports = {
 	admins: true,
 	soloServer: true,
 	borrable: false,
-	usos: "-n [nombre de la materia] -r [rol para la materia] -e [emoji para la reaccion]",
+	usos: "-n: nombre de la materia \n-r: nombre del rol para la materia \n-e: emoji para la reaccion",
+	ejemplo: `${prefix}crearmateria -n Introduccion a la programacion -r introProgra -e 💻`,
 	async ejecutar(cliente, mensaje, args) {
 		try{
 			//sacamos los parametros

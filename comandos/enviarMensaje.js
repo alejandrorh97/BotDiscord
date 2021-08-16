@@ -1,4 +1,5 @@
 const {enviarLog} = require('../utils');
+const {prefix} = require('../config.json');
 
 module.exports = {
 	nombre: "msj",
@@ -6,8 +7,11 @@ module.exports = {
     admins: true,
     soloServer: true,
     borrable: true,
-    usos: "-d [canal donde se va enviar el mensaje] -q [Opcional, A quien mencionar] -m [El mensaje a enviarse]",
+    usos: `-d: el canal donde enviar el mensaje
+		-q: a quien mencionar, este es opcional
+		-m: el mensaje`,
 	descripcion: "Manda un mensaje hacia un canal",
+	ejemplo: `${prefix}msj -d #bienvenidos -q @prueba -m esto es el mensaje`,
 	ejecutar(cliente, mensaje, args) {
 		try {
 			var cual = "";

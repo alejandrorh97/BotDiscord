@@ -1,7 +1,7 @@
 const {enviarLog} = require('../utils');
 module.exports = {
 	nombre: 'caracola',
-	descripcion: 'Si no sabes ',
+	descripcion: 'Prueba tu suerte',
     args: false,
 	admins: false,
     soloServer: false,

@@ -1,5 +1,6 @@
 const { MessageCollector } = require("discord.js");
 const { enviarRespuesta, enviarLog } = require("../utils");
+const {prefix} = require('../config.json');
 
 module.exports = {
 	nombre: "rifar",
@@ -8,7 +9,10 @@ module.exports = {
 	admins: false,
 	soloServer: true,
 	borrable: true,
-	usos: `-g [Cuantos grupos hay que formar] -c [cuantos va a haber en cada grupo]`,
+	usos: `-g: cuantos grupos
+    -c: cuantas personas en un grupo`,
+    ejemplo: `${prefix}rifar -g 2 -c 3
+    Que serian 2 grupos de 3 integrantes`,
 	ejecutar(cliente, mensaje, args) {
         try {
             var grupos = 0;

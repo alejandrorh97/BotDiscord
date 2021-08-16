@@ -10,6 +10,7 @@ module.exports = {
     borrable: true,
     soloServer: false,
     usos: "comando",
+    ejemplo: `${prefix}ayuda ping`,
     ejecutar(cliente, mensaje, args) {
         try {
             let { comandos } = mensaje.client;
@@ -21,10 +22,11 @@ module.exports = {
                     if (comando[1].admins && !mensaje.member.permissions.has('ADMINISTRATOR')) {
                         continue;
                     }
-    
+                    let value = `${comando[1].descripcion}`;
+                    if (comando[1].ejemplo) value += `\nEjemplo:\n${comando[1].ejemplo}\n`;
                     embebido.addField(
                         `${prefix}${comando[1].nombre}`,
-                        comando[1].descripcion
+                        value
                     );
                 }
                 embebido.addField(
@@ -38,9 +40,10 @@ module.exports = {
                     comando = comandos.get(args[0]);
                     embebido.setTitle(`Comando ${args[0]}`);
                     embebido.addField("Descripcion", comando.descripcion);
-                    embebido.addField("Uso", `${prefix}${args[0]} ${comando.usos}`);
+                    embebido.addField("Uso", `${comando.usos}`);
+                    if (comando.ejemplo) embebido.addField('Ejemplo', `${comando.ejemplo}`);
                 } else {
-                    embebido.addField("No existe el comando", "");
+                    embebido.addField("No existe el comando", args[0]);
                 }
             }
             if(mensaje.member.permissions.has('ADMINISTRATOR')){

@@ -53,7 +53,7 @@ cliente.on("ready", async () => {
 		console.log("Ya estamos conectado a discord");
 		fs.appendFile(
 			"historialComandos.txt",
-			`---------------------${new Date().toLocaleString()}`,
+			`\n---------------------${new Date().toLocaleString()}`,
 			(error) => {
 				if (error) console.error(error);
 			}
@@ -68,8 +68,21 @@ cliente.on("ready", async () => {
 cliente.on("messageCreate", async (mensaje) => {
 	try {
 		if (mensaje.author.bot) return; //si es mensaje de un bot se ignora
+		if (mensaje.channel.type === 'DM') {
+			mensaje.channel.send("Solo puedes usar comandos en servers donde este yo");
+			return;
+		}
 		let contenido = mensaje.content;
 		if (contenido.startsWith(prefix)) {
+			fs.appendFile(
+				"historialComandos.txt",
+				`\n${new Date().toLocaleString()} Quien: ${
+					mensaje.author.username
+				} Comando: ${mensaje.content}`,
+				(error) => {
+					if (error) console.error(error);
+				}
+			);
 			//extraer los argumentos
 			let argumentos = contenido.slice(prefix.length).trim().split(" ");
 			let borrable = mensaje.channel.type === "dm" ? true : false;
@@ -87,13 +100,6 @@ cliente.on("messageCreate", async (mensaje) => {
 			}
 
 			let comando = cliente.comandos.get(cual);
-
-			if (comando.soloServer && mensaje.channel.type === "dm") {
-				mensaje.channel.send(
-					`<@${mensaje.author.id}> Solo puedes usar este comando en un servidor, no en mensaje privado :face_with_monocle:`
-				);
-				return;
-			}
 
 			//controlar que los comandos que solo admins pueden ejecutar
 			if (comando.admins) {
@@ -117,7 +123,7 @@ cliente.on("messageCreate", async (mensaje) => {
 			if (comando.args && !argumentos.length) {
 				mensaje.channel
 					.send(`<@${mensaje.author.id}> No has dado ningun argumento :triumph:
-            \nEsta es la forma de usar el comando:\n ${comando.usos}`);
+Esta es la forma de usar el comando:\n ${comando.ejemplo}`);
 				return;
 			}
 			comando.ejecutar(cliente, mensaje, argumentos);
@@ -133,15 +139,6 @@ cliente.on("messageCreate", async (mensaje) => {
 			quien: mensaje.author.username,
 		});
 	}
-	fs.appendFile(
-		"historialComandos.txt",
-		`\n${new Date().toLocaleString()} Quien: ${
-			mensaje.author.username
-		} Comando: ${mensaje.content}`,
-		(error) => {
-			if (error) console.error(error);
-		}
-	);
 });
 
 cliente.on("messageReactionAdd", async (reaccion, usuario) => {

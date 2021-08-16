@@ -9,9 +9,15 @@ module.exports = {
 	admins: false,
     soloServer: true,
 	borrable: true,
-	usos: `-f [fecha del recordatorio] -r [nombre del recordatorio] -m [rol de la materia] -n [nota opcional] -d [canal donde enviar el recordatorio]
+	usos: `
+    -f: fecha del recordatorio
+    -r: titulo del recordatorio
+    -m: rol de la materia
+    -n: nota del recordatorio, es opcional
+    -d: canal del recordatorio
     \nla fecha debe ir con el siguiente formato: dd/mm/aaaa
-    \nla materia debe ser el rol de la materia, para ver los roles usa el comando `,
+    la materia debe ser el rol de la materia, para ver los roles usa el comando ${prefix}materias`,
+    ejemplo: `${prefix}recordar -f 29/08/2021 -r parcial 1 -m @prueba -n parcial sobre verduras -d #general`,
 	async ejecutar(cliente,mensaje, args) {
 		try {
             var fecha = [];
