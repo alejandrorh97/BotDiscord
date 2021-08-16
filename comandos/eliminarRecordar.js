@@ -131,8 +131,7 @@ module.exports = {
                             enviarRespuesta(mensaje,"Ha ingresado una opcion no valida");
                         }
 
-                    });
-
+                    }); 
 
                 }
 
