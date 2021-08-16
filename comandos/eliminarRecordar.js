@@ -133,7 +133,7 @@ module.exports = {
 
                     }); 
 
-                }
+                } 
 
             });
         } catch (error) {
