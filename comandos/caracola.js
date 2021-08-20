@@ -57,8 +57,9 @@ module.exports = {
                 "Imagen risitas",
                 "Imagen kun",
                 "Solo soy bot",
-                "Claro que no, ¿Qué somos monos?"
-            ]
+                "Claro que no, ¿Qué somos monos?",
+                "No me pagan lo suficiente para ser el bot de este servidor"
+            ];
             let r = respuestas.splice(Math.floor(Math.random() * respuestas.length), 1).join(' ');
             if (r.startsWith("Imagen ")) {
                 mensaje.reply({

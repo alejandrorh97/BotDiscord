@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const { prefix, token, server, mensajereaccion } = require("./config.json");
 const fs = require("fs");
-const { enviarLog } = require("./utils");
+const { enviarLog, enviarMensaje } = require("./utils");
 const db = require("megadb");
 
 //Creamos los objetos necesarios
@@ -50,6 +50,17 @@ cliente.on("ready", async () => {
 		server: server,
 		mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(date)}`,
 	});*/
+		const cron = require("node-cron");
+		cron.schedule("0 10 * * *", (hora) => {
+			enviarMensaje(
+				{
+					cliente: cliente,
+					server: server,
+					canal: '875857711684788255',
+					mensaje: "estamos probando los recordatorios"
+				}
+			);
+		});
 		console.log("Ya estamos conectado a discord");
 		fs.appendFile(
 			"historialComandos.txt",
@@ -68,8 +79,10 @@ cliente.on("ready", async () => {
 cliente.on("messageCreate", async (mensaje) => {
 	try {
 		if (mensaje.author.bot) return; //si es mensaje de un bot se ignora
-		if (mensaje.channel.type === 'DM') {
-			mensaje.channel.send("Solo puedes usar comandos en servers donde este yo");
+		if (mensaje.channel.type === "DM") {
+			mensaje.channel.send(
+				"Solo puedes usar comandos en servers donde este yo"
+			);
 			return;
 		}
 		let contenido = mensaje.content;
