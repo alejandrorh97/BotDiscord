@@ -1,8 +1,15 @@
 const Discord = require("discord.js");
-const { prefix, token, server, mensajereaccion } = require("./config.json");
+const {
+	prefix,
+	token,
+	server,
+	mensajereaccion,
+	canallogs,
+} = require("./config.json");
 const fs = require("fs");
 const { enviarLog, enviarMensaje } = require("./utils");
 const db = require("megadb");
+const sql = require("./db");
 
 //Creamos los objetos necesarios
 const cliente = new Discord.Client({
@@ -44,23 +51,51 @@ cliente.on("ready", async () => {
 		}
 		let { formatearFecha, formatearHora } = require("./utils");
 		let date = new Date();
-		/*enviarMensaje({
-		cliente: cliente,
-		canal: canallogs,
-		server: server,
-		mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(date)}`,
-	});*/
+		/*
+		enviarMensaje({
+			cliente: cliente,
+			canal: canallogs,
+			server: server,
+			mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(
+				date
+			)}`,
+		});*/
+		// job que ve si hay eventos semanales
 		const cron = require("node-cron");
-		cron.schedule("0 10 * * *", (hora) => {
-			enviarMensaje(
-				{
+		cron.schedule(" 0 10 * * *", async (hora) => {
+			const conexion = new sql();
+			await conexion.conectar();
+			const recordatorios = await conexion.getRecordatoriosSemanales();
+			if (recordatorios.length > 0) {
+				var cual = "";
+				var mensaje = "Recordatorios semanales\n";
+				for (const recordatorio of recordatorios) {
+					if (cual !== recordatorio.materia) {
+						cual = recordatorio.materia;
+						mensaje += `\nLos recordatorios para ${cual} son los siguientes`;
+					}
+					mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
+					mensaje += `\n\t**Fecha**: ${recordatorio.fecha}`;
+					if (recordatorio.mensaje)
+						mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
+					mensaje += `\n\n`;
+				}
+				enviarMensaje({
 					cliente: cliente,
 					server: server,
-					canal: '875857711684788255',
-					mensaje: "estamos probando los recordatorios"
-				}
-			);
+					canal: '871861839066185758',
+					mensaje: mensaje
+				})
+			} else {
+				enviarMensaje({
+					cliente: cliente,
+					server: server,
+					canal: "871861839066185758",
+					mensaje: "No hay recordatorios para esta semana",
+				});
+			}
 		});
+
 		console.log("Ya estamos conectado a discord");
 		fs.appendFile(
 			"historialComandos.txt",

@@ -7,7 +7,7 @@ class DB {
 
 	conectar(){
 		return new Promise((resuelta, rechazada) => {
-			this.conexion = new sqlite3.Database("./database.db", (error) => {
+			this.conexion = new sqlite3.Database("./DB/database.db", (error) => {
 				if (error){
 					console.error(`Error al conectarse a la DB ${error}`);
 					rechazada(error);

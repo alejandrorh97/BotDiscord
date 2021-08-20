@@ -6,7 +6,7 @@ module.exports = {
 	nombre: 'recordar',
 	descripcion: 'Te recuerda sobre lo que quieras',
     args: true,
-	admins: false,
+	admins: true,
     soloServer: true,
 	borrable: true,
 	usos: `
@@ -98,7 +98,7 @@ module.exports = {
             await db.setRecordatorios(
                 {
                     fecha: `${fecha.toISOString().slice(0,10)}`,
-                    fechanode: `0 0 ${fecha.getDate()} ${fecha.getMonth()+1} *`,
+                    fechanode: `* * ${fecha.getDate()} ${fecha.getMonth()+1} *`,
                     materia: materia,
                     actividad: recordatorio,
                     mensaje: nota,

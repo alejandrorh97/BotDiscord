@@ -1,3 +1,3 @@
 {
-    "ignore": ["mega_databases/*", "historialComandos.txt", "database.db"]
+    "ignore": ["mega_databases/*", "historialComandos.txt", "DB/*"]
 }

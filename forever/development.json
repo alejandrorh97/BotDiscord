@@ -3,8 +3,8 @@
     "append": true,
     "watch": true,
     "script": "index.js",
-    "sourceDir": "/home/alejandro/proyectos/BotDiscord/",
-    "logFile": "/home/alejandro/proyectos/logs/forever.log",
-    "outFile": "/home/alejandro/proyectos/logs/out.log",
-    "errFile": "/home/alejandro/proyectos/logs/error.log"
+    "sourceDir": "/home/alejandrorrh97/agentej",
+    "logFile": "/home/alejandrorrh97/logs/forever.log",
+    "outFile": "/home/alejandrorrh97/logs/out.log",
+    "errFile": "/home/alejandrorrh97/logs/error.log"
 }
