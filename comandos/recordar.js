@@ -9,6 +9,7 @@ module.exports = {
 	admins: true,
     soloServer: true,
 	borrable: true,
+    categoria: "recordatorio",
 	usos: `
     -f: fecha del recordatorio
     -r: titulo del recordatorio

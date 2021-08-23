@@ -6,6 +6,7 @@ module.exports = {
     admins: false,
     soloServer: false,
     borrable: true,
+    categoria: "ayuda",
     usos: "solo llamalo :v",
     ejecutar(cliente, mensaje, args) {
         try {

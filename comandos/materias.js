@@ -8,6 +8,7 @@ module.exports = {
 	admins: false,
 	soloServer: true,
 	borrable: true,
+	categoria: "materia",
 	usos: "Solo llamalo",
 	async ejecutar(cliente, mensaje, args) {
 		try {

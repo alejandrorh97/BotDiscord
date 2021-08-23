@@ -7,6 +7,7 @@ module.exports = {
     admins: true,
     soloServer: true,
     borrable: true,
+	categoria: "gestion",
     usos: `-d: el canal donde enviar el mensaje
 		-q: a quien mencionar, este es opcional
 		-m: el mensaje`,

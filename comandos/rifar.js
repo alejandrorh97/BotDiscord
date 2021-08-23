@@ -9,6 +9,7 @@ module.exports = {
 	admins: false,
 	soloServer: true,
 	borrable: true,
+    categoria: "ayuda",
 	usos: `-g: cuantos grupos
     -c: cuantas personas en un grupo`,
     ejemplo: `${prefix}rifar -g 2 -c 3

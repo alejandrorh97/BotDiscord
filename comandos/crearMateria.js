@@ -10,6 +10,7 @@ module.exports = {
 	admins: true,
 	soloServer: true,
 	borrable: false,
+	categoria: "materia",
 	usos: "-n: nombre de la materia \n-r: nombre del rol para la materia \n-e: emoji para la reaccion",
 	ejemplo: `${prefix}crearmateria -n Introduccion a la programacion -r introProgra -e 💻`,
 	async ejecutar(cliente, mensaje, args) {

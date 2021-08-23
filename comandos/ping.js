@@ -15,6 +15,7 @@ module.exports = {
 	admins: false,
     soloServer: false,
 	borrable: false,
+	categoria: "diversion",
 	usos: "",
 	ejecutar(cliente,mensaje, args) {
 		try {

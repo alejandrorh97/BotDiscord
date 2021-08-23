@@ -6,6 +6,7 @@ module.exports = {
 	admins: false,
     soloServer: false,
 	borrable: false,
+    categoria: "diversion",
 	usos: "Solo pon tu pregunta despues del comando",
 	ejecutar(cliente,mensaje, args) {
         try {

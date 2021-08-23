@@ -10,6 +10,7 @@ module.exports = {
     admins: true,
     soloServer: true,
     borrable: true,
+    categoria: "recordatorio",
     usos: '-m [rol de la materia]',
     async ejecutar(cliente, mensaje, args) {
         try {

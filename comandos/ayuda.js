@@ -1,5 +1,5 @@
 const { prefix } = require("../config.json");
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageActionRow, MessageSelectMenu } = require("discord.js");
 const {enviarLog} = require('../utils');
 
 module.exports = {
@@ -10,51 +10,105 @@ module.exports = {
     borrable: true,
     soloServer: false,
     usos: "comando",
+    categoria: "inicio",
     ejemplo: `${prefix}ayuda ping`,
-    ejecutar(cliente, mensaje, args) {
+    async ejecutar(cliente, mensaje, args) {
         try {
-            let { comandos } = mensaje.client;
-            let embebido = new MessageEmbed();
-            if (!args.length) {
-                embebido.setTitle("Comandos disponibles");
-                for (let comando of comandos) {
-                    //ver si solo admins
-                    if (comando[1].admins && !mensaje.member.permissions.has('ADMINISTRATOR')) {
-                        continue;
+            var comandos = cliente.comandos;
+
+            if(!args.length){
+                var color = "";
+                if(mensaje.member.permissions.has('ADMINISTRATOR')){
+                    color = "GOLD";
+                }
+                else {
+                    color = "BLUE";
+                }
+                var inicio = new MessageEmbed();
+                inicio.setTitle("Comandos Disponibles");
+                inicio.setDescription("Selecciona una categoria");
+                inicio.setColor(color);
+                inicio.setFooter("Tienes 1 minuto para ver los comandos antes de borrar este mensaje");
+
+                var categorias = new Map();
+                var listado = [];
+                for (const comando of comandos.values()) {
+                    if (categorias.has(comando.categoria)) {
+                        let mensaje = categorias.get(comando.categoria);
+                        let descripcion = `${comando.descripcion}`;
+                        if (comando.ejemplo) descripcion += `\nEjemplo:\n${comando.ejemplo}\n`;
+                        mensaje.addField(comando.nombre, descripcion);
                     }
-                    let value = `${comando[1].descripcion}`;
-                    if (comando[1].ejemplo) value += `\nEjemplo:\n${comando[1].ejemplo}\n`;
-                    embebido.addField(
-                        `${prefix}${comando[1].nombre}`,
-                        value
-                    );
+                    else {
+                        let embebido = new MessageEmbed();
+                        embebido.setTitle(`Categoria ${comando.categoria}`);
+                        let descripcion = `${comando.descripcion}`;
+                        if (comando.ejemplo) descripcion += `\nEjemplo:\n${comando.ejemplo}\n`;
+                        embebido.addField(comando.nombre, descripcion);
+                        embebido.setFooter("Tienes 1 minuto para ver los comandos antes de borrar este mensaje");
+                        embebido.setColor(color);
+                        categorias.set(comando.categoria, embebido);
+                        listado.push({
+                            label: comando.categoria,
+                            value: comando.categoria
+                        });
+                    }
                 }
-                embebido.addField(
-                    "Mas informacion",
-                    `Utiliza ${prefix}ayuda comando para obtener mas informacion sobre ese comando`
-                );
-            } else if (args.length >= 2) {
-                embebido.addField("Error", "Muchos parametros solo 1");
-            } else {
-                if (comandos.has(args[0])) {
-                    comando = comandos.get(args[0]);
-                    embebido.setTitle(`Comando ${args[0]}`);
-                    embebido.addField("Descripcion", comando.descripcion);
-                    embebido.addField("Uso", `${comando.usos}`);
-                    if (comando.ejemplo) embebido.addField('Ejemplo', `${comando.ejemplo}`);
-                } else {
-                    embebido.addField("No existe el comando", args[0]);
+                for (const embebido of categorias.values()) {
+                    embebido.addField("Mas informacion", `Utiliza "${prefix}ayuda comando" para obtener mas informacion sobre ese comando`);
                 }
+
+                var menu = new MessageActionRow();
+                var opciones = new MessageSelectMenu();
+                opciones.setCustomId('ayudaOpcion');
+                opciones.setPlaceholder("Selecciona la categoria");
+                opciones.addOptions(listado);
+                menu.addComponents(opciones);
+    
+                var respuesta = await mensaje.channel.send({embeds: [inicio], components: [menu]});
+                var filtro = (interaccion) => interaccion.customId === 'ayudaOpcion' && interaccion.user.id === mensaje.author.id;
+                var opcionselect = respuesta.createMessageComponentCollector({filtro, time: 1000 * 60});
+    
+                opcionselect.on('collect', i => {
+                    opcionselect.resetTimer();
+                    respuesta.edit({embeds: [categorias.get(i.values[0])]});
+                    i.deferUpdate();
+                });
+    
+                opcionselect.on('end', recolectado => {
+                    respuesta.delete()
+                });
             }
-            if(mensaje.member.permissions.has('ADMINISTRATOR')){
-                embebido.setColor("RED");
+            else if (args.length >= 2){
+                var error = new MessageEmbed();
+                error.setTitle("Error");
+                error.setDescription("Solo puedes ver la informacion de un comando a la vez");
+                error.setColor("RED");
+                mensaje.channel.send({embeds: [error]});
+                return;
             }
             else {
-                embebido.setColor("BLUE");
+                var comando = comandos.get(args[0]);
+                if (comando) {
+                    var embebido = new MessageEmbed();
+                    embebido.setTitle("Error 404");
+                    embebido.setDescription("No existe el comando ");
+                    embebido.setColor("GREEN");
+                    mensaje.channel.send({embeds: [embebido]});
+                    return;
+                }
+                else {
+                    var error = new MessageEmbed();
+                    error.setTitle("Error 404");
+                    error.setDescription("No existe el comando ");
+                    error.setColor("RED");
+                    mensaje.channel.send({embeds: [error]});
+                    return;
+                }
             }
-            
-            mensaje.channel.send({embeds: [embebido]});
-        } catch (error) {
+
+        }
+        catch (error) {
             enviarLog({
 				cliente: cliente,
 				lugar: "comando -> ayuda",
