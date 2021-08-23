@@ -29,7 +29,7 @@ module.exports = {
                 }
             }
 
-            if (materia > 1) {
+            if (materia.length > 1) {
                 enviarRespuesta(mensaje, "Solo una materia a la vez");
                 return;
             }
