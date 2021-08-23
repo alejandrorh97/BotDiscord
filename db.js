@@ -70,8 +70,42 @@ class DB {
 	getRecordatoriosMateria(materia) {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE materia = ?;`,
+				`SELECT * FROM recordatorios WHERE materia = ? ORDER BY fecha;`,
 				[materia],
+				(error, filas) => {
+					if (error) {
+						console.error(`Error al obtener los recordatorios diarios: ${error}`);
+						rechazada(error);
+					} else {
+						resuelta(filas);
+					}
+				}
+			);
+		});
+	}
+
+	getRecordatoriosMateriaFecha(materia,fecha) {
+		return new Promise((resuelta, rechazada) => {
+			this.conexion.all(
+				`SELECT * FROM recordatorios WHERE materia = ? AND fecha = ? ORDER BY fecha;`,
+				[materia,fecha],
+				(error, filas) => {
+					if (error) {
+						console.error(`Error al obtener los recordatorios diarios: ${error}`);
+						rechazada(error);
+					} else {
+						resuelta(filas);
+					}
+				}
+			);
+		});
+	}
+
+	getRecordatoriosFecha(fecha) {
+		return new Promise((resuelta, rechazada) => {
+			this.conexion.all(
+				`SELECT * FROM recordatorios WHERE fecha = ? ORDER BY fecha;`,
+				[fecha],
 				(error, filas) => {
 					if (error) {
 						console.error(`Error al obtener los recordatorios diarios: ${error}`);
