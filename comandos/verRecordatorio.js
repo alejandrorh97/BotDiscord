@@ -51,13 +51,19 @@ module.exports = {
             var db = new DB();
             db.conectar()
             if (materia != "" && fecha != "") {
-                var contenido = await db.getRecordatoriosMateriaFecha(mensaje.mentions.roles.first().toString(),fecha[0]);
+                var fechas = fecha.join('').split('/');
+                fechas = new Date(fechas[2], fechas[1]-1, fechas[0]);
+                fechas = `${fechas.toISOString().slice(0,10)}`
+                var contenido = await db.getRecordatoriosMateriaFecha(mensaje.mentions.roles.first().toString(),fechas);
                 var pos = 1;
                 materia = mensaje.mentions.roles.first().name;
                 var msj = ` Recordatorios para la materia **${materia}** con la fecha: ${fecha[0]} \n`;
             }
             else if (fecha != "") {
-                var contenido = await db.getRecordatoriosFecha(fecha[0]);
+                var fechas = fecha.join('').split('/');
+                fechas = new Date(fechas[2], fechas[1]-1, fechas[0]);
+                fechas = `${fechas.toISOString().slice(0,10)}`
+                var contenido = await db.getRecordatoriosFecha(fechas);
                 var pos = 1;
                 var msj = ` Recordatorios para la fecha **${fecha[0]}**:\n`;
             }
