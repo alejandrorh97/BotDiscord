@@ -33,6 +33,7 @@ module.exports = {
                 var categorias = new Map();
                 var listado = [];
                 for (const comando of comandos.values()) {
+                    if (comando.admins && !mensaje.member.permissions.has('ADMINISTRATOR')) continue;
                     if (categorias.has(comando.categoria)) {
                         let mensaje = categorias.get(comando.categoria);
                         let descripcion = `${comando.descripcion}`;
@@ -91,8 +92,9 @@ module.exports = {
                 var comando = comandos.get(args[0]);
                 if (comando) {
                     var embebido = new MessageEmbed();
-                    embebido.setTitle("Error 404");
-                    embebido.setDescription("No existe el comando ");
+                    embebido.setTitle(`Comando ${comando.nombre}`);
+                    embebido.addField(`Descripcion`, comando.descripcion);
+                    if (comando.ejemplo) embebido.addField(`Ejemplo`, comando.ejemplo);
                     embebido.setColor("GREEN");
                     mensaje.channel.send({embeds: [embebido]});
                     return;

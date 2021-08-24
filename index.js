@@ -113,6 +113,7 @@ cliente.on("ready", async () => {
 
 cliente.on("messageCreate", async (mensaje) => {
 	try {
+		console.log(mensaje.content);
 		if (mensaje.author.bot) return; //si es mensaje de un bot se ignora
 		if (mensaje.channel.type === "DM") {
 			mensaje.channel.send(
@@ -159,6 +160,7 @@ cliente.on("messageCreate", async (mensaje) => {
 					mensaje.channel.send(
 						`<@${mensaje.author.id}>Me dijeron que no te hiciera caso :wink: :ok_hand:`
 					);
+					return;
 				}
 			}
 
