@@ -34,12 +34,18 @@ module.exports = {
                 enviarRespuesta(mensaje, "Solo una materia a la vez");
                 return;
             }
+            if (materia.length===0){
+                enviarRespuesta(mensaje,"No a ingresado una materia");
+                return;
+            }
 
             var materias = Array.from(cliente.reacciones.values()).find(materia => materia === mensaje.mentions.roles.first().name);
             if (!materias) {
                 enviarRespuesta(mensaje, `Solo puedes modificar recordatorios de materias que actualmente estan en curso\nUsa el comando ${prefix}materias para ver las que estan disponibles`);
                 return;
             }
+
+            
             var db = new DB();
             db.conectar()
             var contenido = await db.getRecordatoriosMateria(mensaje.mentions.roles.first().toString());

@@ -33,6 +33,10 @@ module.exports = {
                 enviarRespuesta(mensaje,"Solo una materia a la vez");
                 return;
             }
+            if (materia.length===0){
+                enviarRespuesta(mensaje,"No a ingresado una materia");
+                return;
+            }
 
             var materias = Array.from(cliente.reacciones.values()).find(materia => materia === mensaje.mentions.roles.first().name);
             if (!materias) {

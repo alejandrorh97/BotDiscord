@@ -39,8 +39,14 @@ module.exports = {
                 return;
             }
             if (fecha.length > 1) {
-                enviarRespuesta(mensaje, "Solo una fecha a la vez")
+                enviarRespuesta(mensaje, "Solo una fecha a la vez");
+                return;
             }
+            if (materia.length===0 && fecha.length===0){
+                enviarRespuesta(mensaje,"No a ingresado una materia o fecha");
+                return;
+            }
+            
             if (materia.length > 0) {
                 var materias = Array.from(cliente.reacciones.values()).find(materia => materia === mensaje.mentions.roles.first().name);
                 if (!materias) {
