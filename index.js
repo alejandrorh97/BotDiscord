@@ -113,7 +113,6 @@ cliente.on("ready", async () => {
 
 cliente.on("messageCreate", async (mensaje) => {
 	try {
-		console.log(mensaje.content);
 		if (mensaje.author.bot) return; //si es mensaje de un bot se ignora
 		if (mensaje.channel.type === "DM") {
 			mensaje.channel.send(
