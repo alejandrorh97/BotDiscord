@@ -13,6 +13,7 @@ module.exports = {
     borrable: true,
     categoria: "recordatorio",
     usos: '-m [rol de la materia] -f [fecha] ',
+    ejemplo: `${prefix}recordatorios -m @prueba -f 12/02/2021`,
     async ejecutar(cliente, mensaje, args) {
         try {
             var materia = [];
