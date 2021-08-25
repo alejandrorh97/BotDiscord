@@ -19,52 +19,57 @@ module.exports = {
 			console.error(`Error Utils.enviarRespuesta \n${error}`);
 		}
 	},
-	enviarLog({ cliente, error, lugar, quien, comando }) {
+	enviarLog({ cliente, error, lugar, quien, comando , accion}) {
 		try {
 			var menciones = new Map();
 			var comand = comando.content;
 			let mensaje = "-------------------------------------------";
 			mensaje += `\n\t${new Date().toLocaleString()}`;
+
 			mensaje += `\n\tLugar: ${lugar}`;
 			mensaje += `\n\tError: ${error}`;
 			if (quien) mensaje += `\n\tQuien: ${quien}`;
-
-			if (comando.mentions.channels.first()) {
-				for (const iterator of comando.mentions.channels) {
-					menciones.set(`#${iterator[0]}`,iterator[1].name);
+			if (accion) mensaje += `\n\tAccion: ${accion}`;
+			if (comando){
+				if (comando.mentions.channels.first()) {
+					for (const iterator of comando.mentions.channels) {
+						menciones.set(`#${iterator[0]}`,iterator[1].name);
+					}
 				}
+				if (comando.mentions.everyone) {
+					comand=comand.replace(`@everyone`,`\\@everyone`);
+				}
+				if (comando.mentions.users.first()) {
+					for (const iterator of comando.mentions.users) {
+						menciones.set(`@!${iterator[0]}`,iterator[1].username);
+					}
+				}
+				if (comando.mentions.roles.first()) {
+					for (const iterator of comando.mentions.roles) {
+						menciones.set(`@&${iterator[0]}`,iterator[1].name);
+					}
+				}
+	
+				for (const iterator of menciones) {
+					if (iterator[0].startsWith('#')){
+						comand=comand.replace(`<${iterator[0]}>`,`#${iterator[1]}`);
+					}
+					else if(iterator[0].startsWith('@!')){
+						comand=comand.replace(`<${iterator[0]}>`,`@${iterator[1]}`);
+					}
+					else if(iterator[0].startsWith('@&')){
+						comand=comand.replace(`<${iterator[0]}>`,`@${iterator[1]}`);
+					}
+					
+				}
+				mensaje+=`\n\tComando: ${comand}`;
 			}
-			if (comando.mentions.everyone) {
-				comand=comand.replace(`@everyone`,`\\@everyone`);
-			}
-			if (comando.mentions.users.first()) {
-				for (const iterator of comando.mentions.users) {
-					menciones.set(`@!${iterator[0]}`,iterator[1].username);
-				}
-			}
-			if (comando.mentions.roles.first()) {
-				for (const iterator of comando.mentions.roles) {
-					menciones.set(`@&${iterator[0]}`,iterator[1].name);
-				}
-			}
-
-			for (const iterator of menciones) {
-				if (iterator[0].startsWith('#')){
-					comand=comand.replace(`<${iterator[0]}>`,`#${iterator[1]}`);
-				}
-				else if(iterator[0].startsWith('@!')){
-					comand=comand.replace(`<${iterator[0]}>`,`@${iterator[1]}`);
-				}
-				else if(iterator[0].startsWith('@&')){
-					comand=comand.replace(`<${iterator[0]}>`,`@${iterator[1]}`);
-				}
-				
-			}
-			mensaje+=`\n\tComando: ${comand}`;
+			
 			cliente.guilds.cache
 				.get(server)
 				.channels.cache.get(canallogs)
 				.send(mensaje);
+			comando.channel.send("No se que hiciste mal pero explote")
 			console.error(error);
 		} catch (error) {
 			console.error(`Error Utils.enviarLog \n${error}`);
