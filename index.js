@@ -186,6 +186,7 @@ Esta es la forma de usar el comando:\n ${comando.ejemplo}`);
 			error: error,
 			lugar: "index.mensajeRecibo",
 			quien: mensaje.author.username,
+			comando: mensaje
 		});
 	}
 });
@@ -207,6 +208,7 @@ cliente.on("messageReactionAdd", async (reaccion, usuario) => {
 			error: error,
 			lugar: "index.darRol",
 			quien: usuario.username,
+			accion: "Dar Rol"
 		});
 	}
 });
@@ -228,6 +230,7 @@ cliente.on("messageReactionRemove", async (reaccion, usuario) => {
 			error: error,
 			lugar: "index.quitarRol",
 			quien: usuario.username,
+			accion: "Quitar Rol"
 		});
 	}
 });

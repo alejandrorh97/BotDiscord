@@ -29,7 +29,8 @@ module.exports = {
                 cliente: cliente,
                 error: error,
                 lugar: "comando -> portada",
-                quien: mensaje.author.username
+                quien: mensaje.author.username,
+                comando:mensaje
             })
         }
     },

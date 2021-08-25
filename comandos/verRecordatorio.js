@@ -110,7 +110,13 @@ module.exports = {
 
         } catch (error) {
             console.error(`Error al procesar el comando ${this.nombre} \n${error}`);
-            enviarLog(cliente, error, this.nombre, mensaje.author.username);
+            enviarLog({
+                cliente: cliente,
+                error: error,
+                lugar: "comando -> recodatorios",
+                quien: mensaje.author.username,
+                comando: mensaje
+            });
         }
     }
 }

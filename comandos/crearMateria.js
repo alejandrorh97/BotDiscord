@@ -97,7 +97,7 @@ module.exports = {
 				lugar: "comando -> crearMateria",
 				error: error,
 				quien: mensaje.author.username,
-				comando: mensaje.content
+				comando: mensaje
 			})
 		}
 }

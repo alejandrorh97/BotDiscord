@@ -132,7 +132,7 @@ module.exports = {
                 error: error,
                 lugar: "comando -> rifar",
                 quien: mensaje.author.username,
-                comando: mensaje.content
+                comando: mensaje
             });
         }
 	},

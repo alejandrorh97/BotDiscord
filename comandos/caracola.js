@@ -78,7 +78,7 @@ module.exports = {
 				lugar: "comando -> caracola",
 				error: error,
 				quien: mensaje.author.username,
-				comando: mensaje.content
+				comando: mensaje
 			});
         }
 	}

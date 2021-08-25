@@ -49,7 +49,7 @@ module.exports = {
 				error: error,
 				lugar: "comando -> enviarMensaje",
 				quien: mensaje.author.username,
-				comando: mensaje.content
+				comando: mensaje
 			})
 		}
 	}

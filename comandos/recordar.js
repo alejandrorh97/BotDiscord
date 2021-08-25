@@ -116,7 +116,7 @@ module.exports = {
                 error: error,
                 lugar: "comando -> recordar",
                 quien: mensaje.author.username,
-                comando: mensaje.content
+                comando: mensaje
             });
         }
 	}

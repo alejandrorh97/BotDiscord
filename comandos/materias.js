@@ -33,7 +33,7 @@ module.exports = {
 				error: error,
 				lugar: "comando -> materia",
 				quien: mensaje.author.username,
-				comando: mensaje.content
+				comando: mensaje
 			})
 		}
         

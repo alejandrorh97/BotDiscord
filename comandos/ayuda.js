@@ -116,7 +116,7 @@ module.exports = {
 				lugar: "comando -> ayuda",
 				error: error,
 				quien: mensaje.author.username,
-				comando: mensaje.content
+				comando: mensaje
 			})
         }
     }
