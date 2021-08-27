@@ -8,7 +8,7 @@ module.exports = {
     nombre: 'modrecordatorio',
     descripcion: 'Modificar un recordatorio existente',
     args: true,
-    admins: true,
+    admins: false,
     soloServer: true,
     borrable: true,
     categoria: "recordatorio",

@@ -4,7 +4,9 @@ const {
 	token,
 	server,
 	mensajereaccion,
-	canallogs,
+	canalrecordatorios,
+	sobreviviente,
+	canallogs
 } = require("./config.json");
 const fs = require("fs");
 const { enviarLog, enviarMensaje } = require("./utils");
@@ -44,14 +46,13 @@ cliente.on("ready", async () => {
 		}
 
 		cliente.reacciones = new Discord.Collection();
-		let reacciones = new db.crearDB("reacciones");
-		let materias = await reacciones.obtener("materias");
+		let materiasdb = new db.crearDB("materias");
+		let materias = await materiasdb.obtener("materias");
 		for (let materia of materias) {
 			cliente.reacciones.set(materia.emoji, materia.rol);
 		}
 		let { formatearFecha, formatearHora } = require("./utils");
 		let date = new Date();
-		/*
 		enviarMensaje({
 			cliente: cliente,
 			canal: canallogs,
@@ -59,40 +60,42 @@ cliente.on("ready", async () => {
 			mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(
 				date
 			)}`,
-		});*/
+		});
 		// job que ve si hay eventos semanales
 		const cron = require("node-cron");
-		cron.schedule(" 0 10 * * *", async (hora) => {
-			const conexion = new sql();
-			await conexion.conectar();
-			const recordatorios = await conexion.getRecordatoriosSemanales();
-			if (recordatorios.length > 0) {
-				var cual = "";
-				var mensaje = "Recordatorios semanales\n";
-				for (const recordatorio of recordatorios) {
-					if (cual !== recordatorio.materia) {
-						cual = recordatorio.materia;
-						mensaje += `\nLos recordatorios para ${cual} son los siguientes`;
+		cron.schedule("0 10 * * 7", async (hora) => {
+			try {
+				const conexion = new sql();
+				await conexion.conectar();
+				const recordatorios = await conexion.getRecordatoriosSemanales();
+				if (recordatorios.length > 0) {
+					var cual = "";
+					var mensaje = `**Despierten mis ${sobreviviente}**\nEstos son los recordatorios para la semana\n`;
+					for (const recordatorio of recordatorios) {
+						if (cual !== recordatorio.materia) {
+							cual = recordatorio.materia;
+							mensaje += `\nLos recordatorios para ${cual} son los siguientes`;
+						}
+						mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
+						mensaje += `\n\t**Fecha**: ${recordatorio.fecha}`;
+						if (recordatorio.mensaje)
+							mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
+						mensaje += `\n\n`;
 					}
-					mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
-					mensaje += `\n\t**Fecha**: ${recordatorio.fecha}`;
-					if (recordatorio.mensaje)
-						mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
-					mensaje += `\n\n`;
+					enviarMensaje({
+						cliente: cliente,
+						server: server,
+						canal: canalrecordatorios,
+						mensaje: mensaje
+					});
+					console.log(`Recordatorios enviados ${hora.toLocaleString()}`);
 				}
-				enviarMensaje({
+			} catch (error) {
+				enviarLog({
 					cliente: cliente,
-					server: server,
-					canal: '871861839066185758',
-					mensaje: mensaje
+					error: error,
+					lugar: `Enviar recordatorio`
 				})
-			} else {
-				enviarMensaje({
-					cliente: cliente,
-					server: server,
-					canal: "871861839066185758",
-					mensaje: "No hay recordatorios para esta semana",
-				});
 			}
 		});
 

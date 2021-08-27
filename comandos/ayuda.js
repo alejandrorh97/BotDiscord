@@ -45,7 +45,7 @@ module.exports = {
                         embebido.setTitle(`Categoria ${comando.categoria}`);
                         let descripcion = `${comando.descripcion}`;
                         if (comando.ejemplo) descripcion += `\nEjemplo:\n${comando.ejemplo}\n`;
-                        embebido.addField(comando.nombre, descripcion);
+                        embebido.addField(`${prefix}${comando.nombre}`, descripcion);
                         embebido.setFooter("Tienes 1 minuto para ver los comandos antes de borrar este mensaje");
                         embebido.setColor(color);
                         categorias.set(comando.categoria, embebido);

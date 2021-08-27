@@ -6,7 +6,7 @@ module.exports = {
 	nombre: 'recordar',
 	descripcion: 'Te recuerda sobre lo que quieras',
     args: true,
-	admins: true,
+	admins: false,
     soloServer: true,
 	borrable: true,
     categoria: "recordatorio",

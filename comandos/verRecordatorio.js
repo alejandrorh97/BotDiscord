@@ -8,7 +8,7 @@ module.exports = {
     nombre: 'recordatorios',
     descripcion: 'Ver recordatorios existentes por materia y fecha o solo materia o fecha',
     args: true,
-    admins: true,
+    admins: false,
     soloServer: true,
     borrable: true,
     categoria: "recordatorio",

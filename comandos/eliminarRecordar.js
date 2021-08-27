@@ -7,7 +7,7 @@ module.exports = {
     nombre: 'delrecordatorio',
     descripcion: 'eliminar un recordatorio existente',
     args: true,
-    admins: true,
+    admins: false,
     soloServer: true,
     borrable: true,
     categoria: "recordatorio",
