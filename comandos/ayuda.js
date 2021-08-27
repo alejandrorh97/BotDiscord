@@ -38,7 +38,7 @@ module.exports = {
                         let mensaje = categorias.get(comando.categoria);
                         let descripcion = `${comando.descripcion}`;
                         if (comando.ejemplo) descripcion += `\nEjemplo:\n${comando.ejemplo}\n`;
-                        mensaje.addField(comando.nombre, descripcion);
+                        mensaje.addField(`${prefix}${comando.nombre}`, descripcion);
                     }
                     else {
                         let embebido = new MessageEmbed();
