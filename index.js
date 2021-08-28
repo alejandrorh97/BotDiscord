@@ -101,7 +101,7 @@ cliente.on("ready", async () => {
 		});
 
 		//job ver si hay evento diario 
-		cron.schedule("0 20 * * *", async (hora) => {
+		cron.schedule("0 16 * * *", async (hora) => {
 			try {
 				const conexion = new sql();
 				await conexion.conectar();
