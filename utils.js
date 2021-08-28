@@ -22,7 +22,6 @@ module.exports = {
 	enviarLog({ cliente, error, lugar, quien, comando , accion}) {
 		try {
 			var menciones = new Map();
-			var comand = comando.content;
 			let mensaje = "-------------------------------------------";
 			mensaje += `\n\t${new Date().toLocaleString()}`;
 			mensaje += `\n\tLugar: ${lugar}`;
@@ -30,6 +29,7 @@ module.exports = {
 			if (quien) mensaje += `\n\tQuien: ${quien}`;
 			if (accion) mensaje += `\n\tAccion: ${accion}`;
 			if (comando){
+				var comand = comando.content;
 				comando.channel.send("No se que hiciste mal pero explote");
 				if (comando.mentions.channels.first()) {
 					for (const iterator of comando.mentions.channels) {

@@ -1,5 +1,5 @@
-var db = require("megadb");
-var { prefix, canalReaccionesId, server } = require("../config.json");
+var megadb = require("megadb");
+var { prefix, canalReaccionesId, server,db } = require("../config.json");
 var { Permissions } = require("discord.js");
 const {enviarLog, enviarRespuesta} = require('../utils');
 
@@ -78,7 +78,7 @@ module.exports = {
 			contenido += `\n\n${emoji}: ${nombre}`;
 			msj.edit(contenido);
 			msj.react(emoji);
-			let materias = new db.crearDB('reacciones');
+			let materias = new megadb.crearDB(db);
 			materias.push('materias', {
 				materia: nombre,
 				emoji: emoji,
