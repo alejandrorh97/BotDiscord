@@ -36,7 +36,7 @@ class DB {
 	getRecordatoriosSemanales() {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE fecha BETWEEN date('now') AND date('now', '+7 day');`,
+				`SELECT * FROM recordatorios WHERE fecha BETWEEN date('now','localtime') AND date('now', '+7 day','localtime');`,
 				[],
 				(error, filas) => {
 					if (error) {
@@ -53,7 +53,7 @@ class DB {
 	getRecordatoriosDiarios() {
 		return new Promise((resuelta, rechazada) => {
 			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE fecha = date('now');`,
+				`SELECT * FROM recordatorios WHERE fecha BETWEEN date('now','localtime') AND date('now', '+1 day','localtime') order by fecha;`,
 				[],
 				(error, filas) => {
 					if (error) {

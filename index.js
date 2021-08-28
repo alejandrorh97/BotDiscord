@@ -6,11 +6,12 @@ const {
 	mensajereaccion,
 	canalrecordatorios,
 	sobreviviente,
-	canallogs
+	canallogs,
+	db
 } = require("./config.json");
 const fs = require("fs");
 const { enviarLog, enviarMensaje } = require("./utils");
-const db = require("megadb");
+const megadb = require("megadb");
 const sql = require("./db");
 
 //Creamos los objetos necesarios
@@ -46,7 +47,7 @@ cliente.on("ready", async () => {
 		}
 
 		cliente.reacciones = new Discord.Collection();
-		let materiasdb = new db.crearDB("materias");
+		let materiasdb = new megadb.crearDB(db);
 		let materias = await materiasdb.obtener("materias");
 		for (let materia of materias) {
 			cliente.reacciones.set(materia.emoji, materia.rol);
@@ -99,6 +100,70 @@ cliente.on("ready", async () => {
 			}
 		});
 
+		//job ver si hay evento diario 
+		cron.schedule("0 20 * * *", async (hora) => {
+			try {
+				const conexion = new sql();
+				await conexion.conectar();
+				const recordatoriosD = await conexion.getRecordatoriosDiarios();
+				if (recordatoriosD.length > 0) {
+					var cual = "";
+					var fecha = "";
+					var mensaje = "";
+					var id = "";
+					for (const recordatorio of recordatoriosD) {
+						if (cual !== recordatorio.materia) {
+							if (cual !== "") {
+								enviarMensaje({
+									cliente: cliente,
+									server: server,
+									canal: id,
+									mensaje: mensaje
+								});
+							}
+							id = recordatorio.idcanal;
+							cual = recordatorio.materia;
+							mensaje = "Recordatorios Diarios\n";
+							mensaje += `\nLos recordatorios para ${cual} son los siguientes`;
+						}
+						else if (fecha !== recordatorio.fecha) {
+							fecha = recordatorio.fecha;
+							mensaje += `\nLos recordatorios para ${cual} de mañana son:`;
+						}
+						mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
+						mensaje += `\n\t**Fecha**: ${recordatorio.fecha}`;
+						if (recordatorio.mensaje)
+							mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
+						mensaje += `\n\n`;
+
+					}
+					enviarMensaje({
+						cliente: cliente,
+						server: server,
+						canal: id,
+						mensaje: mensaje
+					});
+					console.log(`Recordatorios enviados ${hora.toLocaleString()}`);
+
+				} else {
+					enviarMensaje({
+						cliente: cliente,
+						server: server,
+						canal: canalrecordatorios,
+						mensaje: "No hay recordatorios para esta semana",
+					})
+				}
+			} catch (error) {
+				enviarLog({
+					cliente: cliente,
+					error: error,
+					lugar: `Enviar recordatorio`
+				})
+			};
+
+		});
+
+
 		console.log("Ya estamos conectado a discord");
 		fs.appendFile(
 			"historialComandos.txt",
@@ -127,8 +192,7 @@ cliente.on("messageCreate", async (mensaje) => {
 		if (contenido.startsWith(prefix)) {
 			fs.appendFile(
 				"historialComandos.txt",
-				`\n${new Date().toLocaleString()} Quien: ${
-					mensaje.author.username
+				`\n${new Date().toLocaleString()} Quien: ${mensaje.author.username
 				} Comando: ${mensaje.content}`,
 				(error) => {
 					if (error) console.error(error);
