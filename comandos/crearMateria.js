@@ -84,6 +84,7 @@ module.exports = {
 				emoji: emoji,
 				rol: rol[0]
 			});
+			cliente.reacciones.set(emoji, rol[0]);
 			let voz = await mensaje.guild.channels.create(`voz ${nombre}`,{
 				type: "GUILD_VOICE",
 				permissionOverwrites: roles,

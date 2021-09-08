@@ -46,7 +46,6 @@ module.exports = {
             }
 
             var db = new DB();
-            db.conectar()
             var contenido = await db.getRecordatoriosMateria(mensaje.mentions.roles.first().toString());
             var pos = 1;
             materia = mensaje.mentions.roles.first().name;
@@ -55,10 +54,9 @@ module.exports = {
             //Se imprimen las actividades por la materia mencionada
             var informacion = []
             for (var i of contenido) {
-                m = Object.values(i)
-                msj = msj + (`**${pos}-**Fecha:${m[1]}\tHora:${m[6]}\tActividad:${m[4]}\tMensaje:${m[5]}\tCanal: ${m[7]}\n`);
+                msj = msj + (`**${pos}-** **Fecha:** ${i.fecha.toLocaleString().split(' ')[0]}\t**Hora:** ${i.hora}\t**Actividad:** ${i.actividad}\t**Mensaje:** ${i.mensaje}\t**Canal:** ${i.canal}\n`);
                 pos++
-                informacion.push(m);
+                informacion.push(i);
             }
             var respuesta = enviarRespuesta(mensaje,msj);
 
@@ -102,8 +100,7 @@ module.exports = {
                     }
                     //Guarda la actividad seleccionada
                     informacion = informacion[(posicion - 1)];
-                    respuesta = enviarRespuesta(mensaje,`\nEsta seguro de eliminar el recordatorio?\nFecha:${informacion[1]}\tHora:${informacion[6]}\tActividad:${informacion[4]}\tMensaje:${informacion[5]}\tCanal: ${informacion[7]} \nS: para si\nN: para no`);
-
+                    respuesta = enviarRespuesta(mensaje,`\nEsta seguro de eliminar el recordatorio?\nFecha:${informacion.fecha.toLocaleString().split(' ')[0]}\tHora:${informacion.hora}\tActividad:${informacion.actividad}\tMensaje:${informacion.mensaje}\tCanal: ${informacion.canal} \nS: para si\nN: para no`);
                     //Empieza la recoleccion confirmacion para eliminar
                     var colector = new MessageCollector(mensaje.channel, {
                         filter:filter,
@@ -127,9 +124,8 @@ module.exports = {
                         }
 
                         if (confirmacion === "S" || confirmacion === "s") {
-                            await db.deleteRecordatorio({
-                                id: informacion[0]
-                            });
+                            db = new DB();
+                            await db.deleteREcordatorio(informacion.id);
                             enviarRespuesta(mensaje,"Se a eliminado el recordatorio")
                         } else if (confirmacion === "N" || confirmacion === "n") {
                             enviarRespuesta(mensaje,"No se a eliminado el recordatorio");

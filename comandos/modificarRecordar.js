@@ -48,7 +48,6 @@ module.exports = {
 
             
             var db = new DB();
-            db.conectar()
             var contenido = await db.getRecordatoriosMateria(mensaje.mentions.roles.first().toString());
             var pos = 1;
             materia = mensaje.mentions.roles.first().name;
@@ -57,10 +56,9 @@ module.exports = {
             //Se imprimen las actividades por la materia mencionada
             var informacion = []
             for (var i of contenido) {
-                m = Object.values(i)
-                msj = msj + (`**${pos}-**Fecha:${m[1]}\tHora:${m[6]}\tActividad:${m[4]}\tMensaje:${m[5]}\tCanal: ${m[7]}\n`);
+                msj = msj + (`**${pos}-** **Fecha:** ${i.fecha.toLocaleString().split(' ')[0]}\t**Hora:** ${i.hora}\t**Actividad:** ${i.actividad}\t**Mensaje:** ${i.mensaje}\t**Canal:** ${i.canal}\n`);
                 pos++
-                informacion.push(m);
+                informacion.push(i);
             }
             var respuesta = enviarRespuesta(mensaje, msj);
 
@@ -165,27 +163,29 @@ module.exports = {
                             }
                             //validamos que esten los argumentos correctamente
                             if (fecha.length === 0) {
-                                fecha.push(informacion[1]);
+                                fecha.push(informacion.fecha);
                             }
                             if (fecha.length > 1) {
                                 enviarRespuesta(mensaje, "Solo una fecha a la vez");
                                 return;
                             }
                             if (recordatorio.length === 0) {
-                                recordatorio.push(informacion[4]);
+                                recordatorio.push(informacion.recordatorio);
                             }
                             if (nota.length === 0) {
-                                nota.push(informacion[5])
+                                nota.push(informacion.nota)
                             }
                             if (donde.length === 0) {
-                                donde.push(informacion[7]);
+                                donde.push(informacion.canal);
                             }
                             if (donde.length > 1) {
                                 enviarRespuesta(mensaje, "Solo un canal a la vez")
                                 return;
                             }
 
-                            var id = informacion[0];
+                            var id = informacion.id;
+                            console.log(informacion);
+                            console.log(id);
                             var idcanal = donde[0].split("<#");
                             idcanal = idcanal[1].split(">");
                             idcanal = idcanal[0];
@@ -195,16 +195,17 @@ module.exports = {
                             recordatorio = recordatorio.join(' ');
                             nota = nota.join(' ');
                             fecha = new Date(fecha[2], fecha[1] - 1, fecha[0]);
-                            await db.updateRecordatorio({
+                            db = new DB();
+                            await db.updateRecordatorios({
                                 id: id,
                                 fecha: `${fecha.toISOString().slice(0, 10)}`,
-                                fechanode: `0 0 ${fecha.getDate()} ${fecha.getMonth() + 1} *`,
-                                materia: informacion[3],
+                                fecha_node: `0 0 ${fecha.getDate()} ${fecha.getMonth() + 1} *`,
+                                materia: informacion.materia,
                                 actividad: recordatorio,
                                 mensaje: nota,
                                 hora: '00:00',
                                 canal: donde,
-                                idcanal: idcanal,
+                                id_canal: idcanal,
                                 usuario: usuario
                             });
                             enviarRespuesta(mensaje, `Se han guardado los cambios para tu recordatorio`);

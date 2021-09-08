@@ -12,6 +12,7 @@ module.exports = {
     categoria: "recordatorio",
 	usos: `
     -f: fecha del recordatorio
+    -h: hora del recordatorio
     -r: titulo del recordatorio
     -m: rol de la materia
     -n: nota del recordatorio, es opcional
@@ -26,6 +27,7 @@ module.exports = {
             var materia = [];
             var nota = [];
             var donde = [];
+            var hora = [];
             var cual = '';
             for (const arg of args) {
                 if (arg.startsWith('-')){
@@ -48,6 +50,8 @@ module.exports = {
                     case '-d':
                         donde.push(arg);
                         break;
+                    case '-h':
+                        
                 }
             }
             //validamos que esten los argumentos correctamente
@@ -94,18 +98,17 @@ module.exports = {
             recordatorio = recordatorio.join(' ');
             nota = nota.join(' ');
             var db = new DB();
-            db.conectar();
             fecha = new Date(fecha[2], fecha[1]-1, fecha[0]);
-            await db.setRecordatorios(
+            db.setRecordatorios(
                 {
                     fecha: `${fecha.toISOString().slice(0,10)}`,
-                    fechanode: `* * ${fecha.getDate()} ${fecha.getMonth()+1} *`,
+                    fecha_node: `* * ${fecha.getDate()} ${fecha.getMonth()+1} *`,
                     materia: materia,
                     actividad: recordatorio,
                     mensaje: nota,
                     hora: '00:00',
                     canal: donde,
-                    idcanal: idcanal,
+                    id_canal: idcanal,
                     usuario: usuario
                 }
             );

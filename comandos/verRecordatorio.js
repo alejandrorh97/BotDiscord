@@ -57,46 +57,40 @@ module.exports = {
             }
 
             var db = new DB();
-            db.conectar()
             if (materia != "" && fecha != "") {
                 var fechas = fecha.join('').split('/');
                 fechas = new Date(fechas[2], fechas[1]-1, fechas[0]);
-                fechas = `${fechas.toISOString().slice(0,10)}`
-                var contenido = await db.getRecordatoriosMateriaFecha(mensaje.mentions.roles.first().toString(),fechas);
-                var pos = 1;
+                fechas = `${fechas.toISOString().slice(0,10)}`;
+                var contenido = await db.getRecordatoriosFM(mensaje.mentions.roles.first().toString(),fechas);
                 materia = mensaje.mentions.roles.first().name;
                 var msj = ` Recordatorios para la materia **${materia}** con la fecha: ${fecha[0]} \n`;
             }
             else if (fecha != "") {
                 var fechas = fecha.join('').split('/');
                 fechas = new Date(fechas[2], fechas[1]-1, fechas[0]);
-                fechas = `${fechas.toISOString().slice(0,10)}`
+                fechas = `${fechas.toISOString().slice(0,10)}`;
                 var contenido = await db.getRecordatoriosFecha(fechas);
-                var pos = 1;
                 var msj = ` Recordatorios para la fecha **${fecha[0]}**:\n`;
             }
             else if (materia != "") {
                 var contenido = await db.getRecordatoriosMateria(mensaje.mentions.roles.first().toString());
-                var pos = 1;
                 materia = mensaje.mentions.roles.first().name;
                 var msj = ` Recordatorios para la materia **${materia}**:\n`;
             }
             //Se imprimen las actividades por la materia mencionada
             
-            var informacion = []
             if (contenido.length > 0) {
+                var pos = 1;
                 for (var i of contenido) {
-                    m = Object.values(i)
                     if (fecha!=""){
-                        msj = msj + (`**${pos}-**Fecha:${m[1]}\tHora:${m[6]}\tMateria:${m[3]}\tActividad:${m[4]}\tMensaje:${m[5]}\tCanal: ${m[7]}\n`);
+                        msj = msj + (`**${pos}-** **Fecha:** ${i.fecha.toLocaleString().split(' ')[0]}\t**Hora:** ${i.hora}\t**Actividad:** ${i.actividad}\t**Mensaje:** ${i.mensaje}\t**Canal:** ${i.canal}\n`);
                     }else{
-                        msj = msj + (`**${pos}-**Fecha:${m[1]}\tHora:${m[6]}\tActividad:${m[4]}\tMensaje:${m[5]}\tCanal: ${m[7]}\n`);
+                        msj = msj + (`**${pos}-** **Fecha:** ${i.fecha.toLocaleString().split(' ')[0]}\t**Hora:** ${i.hora}\t**Actividad:** ${i.actividad}\t**Mensaje:** ${i.mensaje}\t**Canal:** ${i.canal}\n`);
                     }
-                    
+                    msj += "\n"
                     pos++
-                    informacion.push(m);
                 }
-                var respuesta = enviarRespuesta(mensaje, msj);
+                enviarRespuesta(mensaje, msj);
             } else {
                 if (materia != "" && fecha != "") {
                     enviarRespuesta(mensaje, `No hay recordatorios para **${materia}** con fecha:${fecha[0]}`)
@@ -110,7 +104,6 @@ module.exports = {
             }
 
         } catch (error) {
-            console.error(`Error al procesar el comando ${this.nombre} \n${error}`);
             enviarLog({
                 cliente: cliente,
                 error: error,

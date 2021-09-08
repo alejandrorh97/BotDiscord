@@ -16,7 +16,7 @@ module.exports = {
 	ejecutar(cliente, mensaje, args) {
 		try {
 			var cual = "";
-			var mensaje = [];
+			var msj = [];
 			for(var arg of args){
 				if (arg.startsWith("-")) {
 					cual = arg;
@@ -24,7 +24,7 @@ module.exports = {
 				}
 				switch (cual) {
 					case '-m':
-						mensaje.push(arg);
+						msj.push(arg);
 						break;
 				}
 			}
@@ -41,7 +41,7 @@ module.exports = {
 				quienes = mensaje.mentions.roles.first().toString();
 			}
 			canales.forEach(element => {
-				element.send(`${quienes} ${mensaje.join(' ')}`);
+				element.send(`${quienes} ${msj.join(' ')}`);
 			});
 		} catch (error) {
 			enviarLog({

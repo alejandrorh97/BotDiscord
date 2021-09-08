@@ -1,29 +1,49 @@
 {
   "materias": [
     {
-      "materia": "ya me aburri 35",
-      "emoji": "🍴",
-      "rol": "aburrido35"
+      "materia": "funciona",
+      "emoji": "😴",
+      "rol": "hellou"
     },
     {
-      "materia": "ya me aburri 2",
-      "emoji": "🤟",
-      "rol": "aburrido"
+      "materia": "ya casi",
+      "emoji": "⚽",
+      "rol": "yacasi"
     },
     {
-      "materia": "ya me aburri",
-      "emoji": "💩",
-      "rol": "aburrido"
+      "materia": "Prueba final espero 7 xd",
+      "emoji": "🐯",
+      "rol": "prueba7"
     },
     {
-      "materia": "prueba2",
+      "materia": "Prueba final espero 6 xd",
+      "emoji": "🐱",
+      "rol": "prueba6"
+    },
+    {
+      "materia": "Prueba final espero 5 xd",
+      "emoji": "🍉",
+      "rol": "prueba5"
+    },
+    {
+      "materia": "Prueba final espero 4 xd",
+      "emoji": "🧐",
+      "rol": "prueba4"
+    },
+    {
+      "materia": "Prueba final espero 3 xd",
+      "emoji": "👍",
+      "rol": "prueba3"
+    },
+    {
+      "materia": "Prueba final espero 2 xd",
       "emoji": "👀",
       "rol": "prueba2"
     },
     {
-      "materia": "prueba",
-      "emoji": "🏗️",
-      "rol": "prueba"
+      "materia": "Prueba final espero xd",
+      "emoji": "😫",
+      "rol": "prueba1"
     }
   ]
 }

@@ -23,9 +23,8 @@ module.exports = {
 		try {
 			var menciones = new Map();
 			let mensaje = "-------------------------------------------";
-			mensaje += `\n\t${new Date().toLocaleString()}`;
+			mensaje += `\n\tFecha: ${new Date().toLocaleString()}`;
 			mensaje += `\n\tLugar: ${lugar}`;
-			mensaje += `\n\tError: ${error}`;
 			if (quien) mensaje += `\n\tQuien: ${quien}`;
 			if (accion) mensaje += `\n\tAccion: ${accion}`;
 			if (comando){
@@ -69,7 +68,9 @@ module.exports = {
 				.get(server)
 				.channels.cache.get(canallogs)
 				.send(mensaje);
-			console.error(`hora ${new Date().toLocaleString()} Error: ${error}`);
+			console.error("\n----------------------------------------------------");
+			console.error(`${new Date().toLocaleString()} Error: ${error}`);
+			console.error("----------------------------------------------------");
 		} catch (error) {
 			console.error(`Error Utils.enviarLog \t${error}`);
 		}

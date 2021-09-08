@@ -1,172 +1,96 @@
-const sqlite3 = require("sqlite3");
+const maria = require('mariadb');
+const config = require('./config_db.json');
 
 class DB {
-	constructor() {
-		
-	}
+    constructor(){
+        this.conexion = maria.createConnection(config);
+    }
 
-	conectar(){
-		return new Promise((resuelta, rechazada) => {
-			this.conexion = new sqlite3.Database("./DB/database.db", (error) => {
-				if (error){
-					console.error(`Error al conectarse a la DB ${error}`);
-					rechazada(error);
-				}
-				else {
-					this.conexion.run(`CREATE TABLE IF NOT EXISTS "recordatorios" (
-						"id"	INTEGER NOT NULL,
-						"fecha"	TEXT NOT NULL,
-						"fechanode"	TEXT NOT NULL,
-						"materia"	TEXT NOT NULL,
-						"actividad"	TEXT NOT NULL,
-						"mensaje"	TEXT,
-						"hora"	TEXT NOT NULL,
-						"canal" TEXT NOT NULL,
-						"idcanal" TEXT NOT NULL,
-						"usuario" TEXT NOT NULL,
-						PRIMARY KEY("id" AUTOINCREMENT)
-					)`);
-					console.log("Conectado a la DB");
-					resuelta(this.conexion);
-				}
-			});
-		});
-	}
-
-	getRecordatoriosSemanales() {
-		return new Promise((resuelta, rechazada) => {
-			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE fecha BETWEEN date('now','localtime') AND date('now', '+7 day','localtime');`,
-				[],
-				(error, filas) => {
-					if (error) {
-						console.error(`Error al obtener los recordatorios semanales: ${error}`);
-						rechazada(error);
-					} else {
-						resuelta(filas);
-					}
-				}
-			);
-		});
-	}
-
-	getRecordatoriosDiarios() {
-		return new Promise((resuelta, rechazada) => {
-			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE fecha BETWEEN date('now','localtime') AND date('now', '+1 day','localtime') order by fecha;`,
-				[],
-				(error, filas) => {
-					if (error) {
-						console.error(`Error al obtener los recordatorios diarios: ${error}`);
-						rechazada(error);
-					} else {
-						resuelta(filas);
-					}
-				}
-			);
-		});
-	}
-
-	getRecordatoriosMateria(materia) {
-		return new Promise((resuelta, rechazada) => {
-			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE materia = ? ORDER BY fecha;`,
-				[materia],
-				(error, filas) => {
-					if (error) {
-						console.error(`Error al obtener los recordatorios diarios: ${error}`);
-						rechazada(error);
-					} else {
-						resuelta(filas);
-					}
-				}
-			);
-		});
-	}
-
-	getRecordatoriosMateriaFecha(materia,fecha) {
-		return new Promise((resuelta, rechazada) => {
-			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE materia = ? AND fecha = ? ORDER BY fecha;`,
-				[materia,fecha],
-				(error, filas) => {
-					if (error) {
-						console.error(`Error al obtener los recordatorios diarios: ${error}`);
-						rechazada(error);
-					} else {
-						resuelta(filas);
-					}
-				}
-			);
-		});
-	}
-
-	getRecordatoriosFecha(fecha) {
-		return new Promise((resuelta, rechazada) => {
-			this.conexion.all(
-				`SELECT * FROM recordatorios WHERE fecha = ? ORDER BY fecha;`,
-				[fecha],
-				(error, filas) => {
-					if (error) {
-						console.error(`Error al obtener los recordatorios diarios: ${error}`);
-						rechazada(error);
-					} else {
-						resuelta(filas);
-					}
-				}
-			);
-		});
-	}
-
-	setRecordatorios({ fecha, fechanode, materia, actividad, mensaje, hora, canal,idcanal,usuario}) {
-		return new Promise((resuelta, rechazada) => {
-			this.conexion.run(
-				`INSERT INTO recordatorios(fecha, fechanode, materia, actividad, mensaje, hora, canal,idcanal,usuario) VALUES (?,?,?,?,?,?,?,?,?);`,
-				[fecha, fechanode, materia, actividad, mensaje, hora,canal,idcanal,usuario],
-				(error) => {
-					if (error) {
-						console.error(`Error al guardar el recordatorio: ${error}`);
-						rechazada(error);
-					} else {
-						resuelta();
-					}
-				}
-			);
-		});
-	}
-
-	updateRecordatorio({ id, fecha, fechanode, materia, actividad, mensaje, hora, canal,idcanal,usuario}) {
-		return new Promise((resuelta, rechazada) => {
-			this.conexion.run(
-				"UPDATE recordatorios SET fecha = ? , fechaNode  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ?, canal = ?, idcanal = ?, usuario = ? WHERE id = ?;",
-				[fecha, fechanode, materia, actividad, mensaje, hora,canal,idcanal,usuario, id],
-				(error) => {
-					if (error) {
-						console.error(`Hubo un error al actualizar el recordatorio: ${error}`);
-                        rechazada(error);
-					}
-					else {
-                        resuelta();
-                    }
-				}
-			);
-		});
-	}
-
-    deleteRecordatorio({id}){
-        return new Promise((resuelta, rechazada) => {
-            this.conexion.run(
-                `DELETE FROM recordatorios WHERE id = ?;`,
-                [id],
-                (error) => {
-                    if(error){
-                        console.error(`Error al eliminar el recordatorio ${error}`);
-                        rechazada(error);
-                    }
-                    resuelta();
-                }
-            )
+    async getRecordatoriosSemanales(){
+        /*
+            Retorna el resultset con los datos solicitados
+        */
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "SELECT * FROM recordatorios WHERE fecha BETWEEN DATE(NOW()) AND  DATE(NOW() + INTERVAL 7 DAY) ORDER by fecha"
         });
+        con.end();
+        return resultados;
+    }
+
+    async getRecordatoriosDiarios(){
+        /*
+            Retorna el resultset con los datos solicitados
+        */
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "SELECT * FROM recordatorios WHERE fecha BETWEEN DATE(NOW()) AND DATE(NOW() + INTERVAL 1 DAY) ORDER by fecha"
+        });
+        con.end();
+        return resultados;
+    }
+
+    async getRecordatoriosMateria(materia){
+        /*
+            retorna el resulset
+        */
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "SELECT * FROM recordatorios WHERE materia = ? AND fecha >= DATE(NOW()) ORDER by fecha"
+        }, [materia]);
+        con.end();
+        return resultados;
+    }
+
+    async getRecordatoriosFM(materia, fecha){
+        /*
+            retorna el resulset
+        */
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "SELECT * FROM recordatorios WHERE fecha = ? AND materia = ? ORDER by fecha"
+        }, [fecha, materia]);
+        con.end();
+        return resultados;
+    }
+
+    async getRecordatoriosFecha(fecha, materia){
+        /*
+            retorna el resulset
+        */
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "SELECT materia, actividad, mensaje, fecha, hora, canal FROM recordatorios WHERE fecha = ? ORDER by fecha"
+        }, [fecha]);
+        con.end();
+        return resultados;
+    }
+
+    async setRecordatorios({fecha , fecha_node, materia, actividad, mensaje, hora, canal,id_canal,usuario}){
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "INSERT INTO recordatorios(fecha, fecha_node, materia, actividad, mensaje, hora, canal,id_canal,usuario) VALUES (?,?,?,?,?,?,?,?,?)"
+        }, [fecha , fecha_node, materia, actividad, mensaje, hora, canal,id_canal,usuario]);
+        con.end();
+        return resultados;
+    }
+
+    async updateRecordatorios({fecha , fecha_node, materia, actividad, mensaje, hora, canal,id_canal,usuario, id}){
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "UPDATE recordatorios SET fecha = ? , fecha_node  = ? , materia  = ? , actividad  = ? , mensaje  = ? ,hora  = ?, canal = ?, id_canal = ?, usuario = ? WHERE id = ?"
+        }, [fecha , fecha_node, materia, actividad, mensaje, hora, canal,id_canal,usuario,id]);
+        con.end();
+        return resultados;
+    }
+
+    async deleteREcordatorio(id){
+        let con = await this.conexion;
+        let resultados = await con.query({
+            sql: "DELETE FROM recordatorios WHERE id = ?"
+        },[id]);
+        con.end();
+        return resultados;
     }
 }
 
