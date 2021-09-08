@@ -6,6 +6,13 @@ class DB {
         this.conexion = maria.createConnection(config);
     }
 
+
+    async ping(){
+        let con = await this.conexion;
+        await con.ping();
+        return true
+    }
+
     async getRecordatoriosSemanales(){
         /*
             Retorna el resultset con los datos solicitados
