@@ -100,7 +100,7 @@ cliente.on("ready", async () => {
 		});
 
         //job ver si hay evento diario 
-		cron.schedule("30 16 * * *", async (hora) => {
+		cron.schedule("5 18 * * *", async (hora) => {
 			try {
 				const conexion = new sql();
 				const recordatoriosD = await conexion.getRecordatoriosDiarios();

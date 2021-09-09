@@ -1,5 +1,5 @@
 const maria = require('mariadb');
-const config = require('./config_db.json');
+const config = require('./configdb.json');
 
 class DB {
     constructor(){
