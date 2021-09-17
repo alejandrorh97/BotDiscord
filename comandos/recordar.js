@@ -12,14 +12,13 @@ module.exports = {
     categoria: "recordatorio",
 	usos: `
     -f: fecha del recordatorio
-    -h: hora del recordatorio
     -r: titulo del recordatorio
     -m: rol de la materia
     -n: nota del recordatorio, es opcional
     -d: canal del recordatorio
-    \nla fecha debe ir con el siguiente formato: dd/mm/aaaa
+    \nla fecha debe ir con el siguiente formato: dd-mm-aaaa
     la materia debe ser el rol de la materia, para ver los roles usa el comando ${prefix}materias`,
-    ejemplo: `${prefix}recordar -f 29/08/2021 -r parcial 1 -m @prueba -n parcial sobre verduras -d #general`,
+    ejemplo: `${prefix}recordar -f 29-08-2021 -r parcial 1 -m @prueba -n parcial sobre verduras -d #general`,
 	async ejecutar(cliente,mensaje, args) {
 		try {
             var fecha = [];
@@ -50,8 +49,6 @@ module.exports = {
                     case '-d':
                         donde.push(arg);
                         break;
-                    case '-h':
-                        
                 }
             }
             //validamos que esten los argumentos correctamente

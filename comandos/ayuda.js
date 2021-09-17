@@ -94,6 +94,7 @@ module.exports = {
                     var embebido = new MessageEmbed();
                     embebido.setTitle(`Comando ${comando.nombre}`);
                     embebido.addField(`Descripcion`, comando.descripcion);
+                    embebido.addField(`Parametros`, comando.usos)
                     if (comando.ejemplo) embebido.addField(`Ejemplo`, comando.ejemplo);
                     embebido.setColor("GREEN");
                     mensaje.channel.send({embeds: [embebido]});

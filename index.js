@@ -13,6 +13,8 @@ const fs = require("fs");
 const { enviarLog, enviarMensaje } = require("./utils");
 const megadb = require("megadb");
 const sql = require("./db");
+const { formatearFecha, formatearHora } = require("./utils");
+var activo = false;
 
 //Creamos los objetos necesarios
 const cliente = new Discord.Client({
@@ -52,7 +54,6 @@ cliente.on("ready", async () => {
         for (let materia of materias) {
             cliente.reacciones.set(materia.emoji, materia.rol);
         }
-		let { formatearFecha, formatearHora } = require("./utils");
 		let date = new Date();
 		enviarMensaje({
 			cliente: cliente,
@@ -62,96 +63,7 @@ cliente.on("ready", async () => {
 				date
 			)}`,
 		});
-        // job que ve si hay eventos semanales
-        const cron = require("node-cron");
-		cron.schedule("0 10 * * 7", async (hora) => {
-			try {
-				const conexion = new sql();
-				const recordatorios = await conexion.getRecordatoriosSemanales();
-				if (recordatorios.length > 0) {
-					var cual = "";
-					var mensaje = `**Despierten mis <@&${sobreviviente}>**\nEstos son los recordatorios para la semana\n`;
-					for (const recordatorio of recordatorios) {
-						if (cual !== recordatorio.materia) {
-							cual = recordatorio.materia;
-							mensaje += `\nLos recordatorios para **${cual}** son los siguientes`;
-						}
-						mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
-						mensaje += `\n\t**Fecha**: ${recordatorio.fecha.toLocaleString().split(' ')[0]}`;
-						if (recordatorio.mensaje)
-							mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
-						mensaje += `\n\n`;
-					}
-					enviarMensaje({
-						cliente: cliente,
-						server: server,
-						canal: canalrecordatorios,
-						mensaje: mensaje
-					});
-					console.log(`Recordatorios semanales enviados ${hora.toLocaleString()}`);
-				}
-			} catch (error) {
-				enviarLog({
-					cliente: cliente,
-					error: error,
-					lugar: `Enviar recordatorio`
-				})
-			}
-		});
-
-        //job ver si hay evento diario 
-		cron.schedule("0 14 * * *", async (hora) => {
-			try {
-				const conexion = new sql();
-				const recordatoriosD = await conexion.getRecordatoriosDiarios();
-				if (recordatoriosD.length > 0) {
-					var cual = "";
-					var fecha = "";
-					var mensaje = "";
-					var id = "";
-					for (const recordatorio of recordatoriosD) {
-						if (cual !== recordatorio.materia) {
-							if (cual !== "") {
-								enviarMensaje({
-									cliente: cliente,
-									server: server,
-									canal: id,
-									mensaje: mensaje
-								});
-							}
-							id = recordatorio.id_canal;
-							cual = recordatorio.materia;
-							mensaje = "Recordatorios Diarios\n";
-							mensaje += `\nLos recordatorios para ${cual} son los siguientes`;
-						}
-						else if (fecha !== recordatorio.fecha) {
-							fecha = recordatorio.fecha;
-							mensaje += `\nLos recordatorios para ${cual} de mañana son:`;
-						}
-						mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
-						mensaje += `\n\t**Fecha**: ${recordatorio.fecha.toLocaleString().split(' ')[0]}`;
-						if (recordatorio.mensaje)
-							mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
-						mensaje += `\n\n`;
-					}
-					enviarMensaje({
-						cliente: cliente,
-						server: server,
-						canal: id,
-						mensaje: mensaje
-					});
-					console.log(`Recordatorios diarios enviados ${hora.toLocaleString()}`);
-				}
-			} catch (error) {
-				enviarLog({
-					cliente: cliente,
-					error: error,
-					lugar: `Enviar recordatorio`
-				})
-			};
-
-		});
-
+        activo = true;
         console.log("Ya estamos conectado a discord");
         fs.appendFile(
             "historialComandos.txt",
@@ -289,6 +201,98 @@ cliente.on("messageReactionRemove", async (reaccion, usuario) => {
             accion: "Quitar Rol",
         });
     }
+});
+
+
+// job que ve si hay eventos semanales
+const cron = require("node-cron");
+cron.schedule("0 10 * * 7", async (hora) => {
+    if(!activo) return;
+    try {
+        const conexion = new sql();
+        const recordatorios = await conexion.getRecordatoriosSemanales();
+        if (recordatorios.length > 0) {
+            var cual = "";
+            var mensaje = `**Despierten mis <@&${sobreviviente}>**\nEstos son los recordatorios para la semana\n`;
+            for (const recordatorio of recordatorios) {
+                if (cual !== recordatorio.materia) {
+                    cual = recordatorio.materia;
+                    mensaje += `\nLos recordatorios para **${cual}** son los siguientes`;
+                }
+                mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
+                mensaje += `\n\t**Fecha**: ${formatearFecha(recordatorio.fecha)}`;
+                if (recordatorio.mensaje)
+                    mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
+                mensaje += `\n\n`;
+            }
+            enviarMensaje({
+                cliente: cliente,
+                server: server,
+                canal: canalrecordatorios,
+                mensaje: mensaje
+            });
+            console.log(`Recordatorios semanales enviados ${hora.toLocaleString()}`);
+        }
+    } catch (error) {
+        enviarLog({
+            cliente: cliente,
+            error: error,
+            lugar: `Enviar recordatorio`
+        })
+    }
+});
+
+//job ver si hay evento diario 
+cron.schedule("0 14 * * *", async (hora) => {
+    if(!activo) return;
+    try {
+        const conexion = new sql();
+        const recordatoriosD = await conexion.getRecordatoriosDiarios();
+        if (recordatoriosD.length > 0) {
+            var cual = "";
+            var fecha = "";
+            var mensaje = "";
+            var id = "";
+            for (const recordatorio of recordatoriosD) {
+                if (cual !== recordatorio.materia) {
+                    if (cual !== "") {
+                        enviarMensaje({
+                            cliente: cliente,
+                            server: server,
+                            canal: id,
+                            mensaje: mensaje
+                        });
+                    }
+                    id = recordatorio.id_canal;
+                    cual = recordatorio.materia;
+                    mensaje = "Recordatorios Diarios\n";
+                    mensaje += `\nLos recordatorios para ${cual} son los siguientes`;
+                }
+                else if (fecha !== recordatorio.fecha) {
+                    fecha = recordatorio.fecha;
+                    mensaje += `\nLos recordatorios para ${cual} de mañana son:`;
+                }
+                mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
+                mensaje += `\n\t**Fecha**: ${formatearFecha(recordatorio.fecha)}`;
+                if (recordatorio.mensaje)
+                    mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
+                mensaje += `\n\n`;
+            }
+            enviarMensaje({
+                cliente: cliente,
+                server: server,
+                canal: id,
+                mensaje: mensaje
+            });
+            console.log(`Recordatorios diarios enviados ${hora.toLocaleString()}`);
+        }
+    } catch (error) {
+        enviarLog({
+            cliente: cliente,
+            error: error,
+            lugar: `Enviar recordatorio`
+        })
+    };
 });
 
 cliente.login(token);
