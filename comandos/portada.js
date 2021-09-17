@@ -1,4 +1,5 @@
 const {enviarLog} = require('../utils');
+const {giveplz} = require('../config.json');
 module.exports = {
     nombre: "portada",
     descripcion: "Te envia una portada para tu trabajo",
@@ -19,7 +20,7 @@ module.exports = {
             } else {
                 txt = `Aqui tenes tu portada <@${mensaje.author.id}`;
             }
-            txt += "<:giveplz:871890147149496340>";
+            txt += `   ${giveplz}`;
             mensaje.channel.send({
                 content: txt,
                 files: ["./recursos/portada.docx"]

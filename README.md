@@ -1,5 +1,8 @@
 # BotDiscord
 
-Proyecto personal utilizando NodeJs para desarrollar un bot para discord utilizando Discord.js
+Personal project using NodeJS and Discord.js library to develop a Discord Bot
 
-💻
+Members:
+
+Alejandro Rivas
+Armando Osorio

@@ -6,7 +6,7 @@ module.exports = {
 	nombre: 'recordar',
 	descripcion: 'Te recuerda sobre lo que quieras',
     args: true,
-	admins: true,
+	admins: false,
     soloServer: true,
 	borrable: true,
     categoria: "recordatorio",
@@ -16,9 +16,9 @@ module.exports = {
     -m: rol de la materia
     -n: nota del recordatorio, es opcional
     -d: canal del recordatorio
-    \nla fecha debe ir con el siguiente formato: dd/mm/aaaa
+    \nla fecha debe ir con el siguiente formato: dd-mm-aaaa
     la materia debe ser el rol de la materia, para ver los roles usa el comando ${prefix}materias`,
-    ejemplo: `${prefix}recordar -f 29/08/2021 -r parcial 1 -m @prueba -n parcial sobre verduras -d #general`,
+    ejemplo: `${prefix}recordar -f 29-08-2021 -r parcial 1 -m @prueba -n parcial sobre verduras -d #general`,
 	async ejecutar(cliente,mensaje, args) {
 		try {
             var fecha = [];
@@ -26,6 +26,7 @@ module.exports = {
             var materia = [];
             var nota = [];
             var donde = [];
+            var hora = [];
             var cual = '';
             for (const arg of args) {
                 if (arg.startsWith('-')){
@@ -94,18 +95,17 @@ module.exports = {
             recordatorio = recordatorio.join(' ');
             nota = nota.join(' ');
             var db = new DB();
-            db.conectar();
             fecha = new Date(fecha[2], fecha[1]-1, fecha[0]);
-            await db.setRecordatorios(
+            db.setRecordatorios(
                 {
                     fecha: `${fecha.toISOString().slice(0,10)}`,
-                    fechanode: `* * ${fecha.getDate()} ${fecha.getMonth()+1} *`,
+                    fecha_node: `* * ${fecha.getDate()} ${fecha.getMonth()+1} *`,
                     materia: materia,
                     actividad: recordatorio,
                     mensaje: nota,
                     hora: '00:00',
                     canal: donde,
-                    idcanal: idcanal,
+                    id_canal: idcanal,
                     usuario: usuario
                 }
             );

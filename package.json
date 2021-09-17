@@ -1,20 +1,37 @@
 {
-  "name": "jarvisbot",
-  "version": "1.0.0",
-  "description": "Bot para el server discord de Comedor Rossy",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "author": "Alejandro Rivas",
-  "license": "ISC",
-  "devDependencies": {
-    "nodemon": "^2.0.12"
-  },
-  "dependencies": {
-    "discord.js": "^13.1.0",
-    "megadb": "^3.4.0",
-    "node-cron": "^3.0.0",
-    "sqlite3": "^5.0.2"
-  }
+    "name": "botdiscord",
+    "version": "1.0.0",
+    "description": "Bot de discord utilizando Discord.js para gestionar servidores de estudio",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/alejandrorh97/BotDiscord.git"
+    },
+    "author": {
+        "name": "Alejandro Rivas",
+        "email": "alejandrorrh97@gmail.com"
+    },
+    "contributors": [
+        {
+            "name": "Armando",
+            "email": ""
+        }
+    ],
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/alejandrorh97/BotDiscord/issues"
+    },
+    "homepage": "https://github.com/alejandrorh97/BotDiscord#readme",
+    "dependencies": {
+        "discord.js": "^13.1.0",
+        "mariadb": "^2.5.4",
+        "megadb": "^3.4.0",
+        "node-cron": "^3.0.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.12"
+    }
 }
