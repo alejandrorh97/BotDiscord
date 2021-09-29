@@ -242,7 +242,7 @@ cron.schedule("0 10 * * 7", async (hora) => {
 });
 
 //job ver si hay evento diario 
-cron.schedule("*/1 * * * *", async (hora) => {
+cron.schedule("0 14 * * *", async (hora) => {
     if(!activo) return;
     try {
         const conexion = new sql();
