@@ -38,14 +38,14 @@ module.exports = {
                         let mensaje = categorias.get(comando.categoria);
                         let descripcion = `${comando.descripcion}`;
                         if (comando.ejemplo) descripcion += `\nEjemplo:\n${comando.ejemplo}\n`;
-                        mensaje.addField(comando.nombre, descripcion);
+                        mensaje.addField(`${prefix}${comando.nombre}`, descripcion);
                     }
                     else {
                         let embebido = new MessageEmbed();
                         embebido.setTitle(`Categoria ${comando.categoria}`);
                         let descripcion = `${comando.descripcion}`;
                         if (comando.ejemplo) descripcion += `\nEjemplo:\n${comando.ejemplo}\n`;
-                        embebido.addField(comando.nombre, descripcion);
+                        embebido.addField(`${prefix}${comando.nombre}`, descripcion);
                         embebido.setFooter("Tienes 1 minuto para ver los comandos antes de borrar este mensaje");
                         embebido.setColor(color);
                         categorias.set(comando.categoria, embebido);
@@ -94,6 +94,7 @@ module.exports = {
                     var embebido = new MessageEmbed();
                     embebido.setTitle(`Comando ${comando.nombre}`);
                     embebido.addField(`Descripcion`, comando.descripcion);
+                    embebido.addField(`Parametros`, comando.usos)
                     if (comando.ejemplo) embebido.addField(`Ejemplo`, comando.ejemplo);
                     embebido.setColor("GREEN");
                     mensaje.channel.send({embeds: [embebido]});

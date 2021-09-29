@@ -1,0 +1,89 @@
+{
+  "materias": [
+    {
+      "materia": "Funda de Progra en Internet",
+      "emoji": "👨‍🦲",
+      "rol": "fpi"
+    },
+    {
+      "materia": "Sistemas Contables",
+      "emoji": "🤑",
+      "rol": "contables"
+    },
+    {
+      "materia": "Ing. Economica",
+      "emoji": "💰",
+      "rol": "economica"
+    },
+    {
+      "materia": "Teoria de Sistemas",
+      "emoji": "⌨️",
+      "rol": "tsi"
+    },
+    {
+      "materia": "Arquitectura de Computadoras",
+      "emoji": "📐",
+      "rol": "arc"
+    },
+    {
+      "materia": "Estructura de Datos",
+      "emoji": "💻",
+      "rol": "esd"
+    },
+    {
+      "materia": "Fisica III",
+      "emoji": "🧲",
+      "rol": "fisica3"
+    },
+    {
+      "materia": "Matematica IV",
+      "emoji": "📓",
+      "rol": "mate4"
+    },
+    {
+      "materia": "Progra III",
+      "emoji": "🖕",
+      "rol": "progra3"
+    },
+    {
+      "materia": "Metodos Probabilisticos",
+      "emoji": "📉",
+      "rol": "probabilisticos"
+    },
+    {
+      "materia": "Mate II",
+      "emoji": "📒",
+      "rol": "mate2"
+    },
+    {
+      "materia": "Fisica I",
+      "emoji": "🏹",
+      "rol": "fisicaI"
+    },
+    {
+      "materia": "Historia SV",
+      "emoji": "😴",
+      "rol": "historia"
+    },
+    {
+      "materia": "Manejo de Software",
+      "emoji": "🗂️",
+      "rol": "manejo"
+    },
+    {
+      "materia": "Progra I",
+      "emoji": "🖥️",
+      "rol": "progra1"
+    },
+    {
+      "materia": "Analisis Financiero",
+      "emoji": "💸",
+      "rol": "anf"
+    },
+    {
+      "materia": "Pruebas",
+      "emoji": "",
+      "rol": "prueba"
+    }
+  ]
+}

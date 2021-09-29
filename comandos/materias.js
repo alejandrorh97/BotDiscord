@@ -1,6 +1,7 @@
-const db = require("megadb");
+const megadb = require("megadb");
 const { MessageEmbed } = require("discord.js");
 const { enviarRespuesta, enviarLog } = require("../utils");
+const {db} = require('../config.json');
 module.exports = {
 	nombre: "materias",
 	descripcion: "Muestra las materias del ciclo actual",
@@ -12,7 +13,7 @@ module.exports = {
 	usos: "Solo llamalo",
 	async ejecutar(cliente, mensaje, args) {
 		try {
-			var datos = new db.crearDB("reacciones");
+			var datos = new megadb.crearDB(db);
 			var materias = await datos.obtener("materias");
 			if (materias.length !== 0) {
 				let embebido = new MessageEmbed();
