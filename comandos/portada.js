@@ -18,7 +18,7 @@ module.exports = {
             ) {
                 txt = `Aqui tiene amo y señor <@${mensaje.author.id}>`;
             } else {
-                txt = `Aqui tenes tu portada <@${mensaje.author.id}`;
+                txt = `Aqui tenes tu portada <@${mensaje.author.id}>`;
             }
             txt += `   ${giveplz}`;
             mensaje.channel.send({

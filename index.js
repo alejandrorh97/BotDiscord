@@ -1,14 +1,5 @@
 const Discord = require("discord.js");
-const {
-    prefix,
-    token,
-    server,
-    mensajereaccion,
-    canalrecordatorios,
-    sobreviviente,
-    canallogs,
-    db,
-} = require("./config.json");
+const config = require("./config.json");
 const fs = require("fs");
 const { enviarLog, enviarMensaje } = require("./utils");
 const megadb = require("megadb");
@@ -38,31 +29,31 @@ cliente.on("ready", async () => {
     //cargar roles y guardar los id
     try {
         cliente.user.setPresence({
-            activities: [{ name: `comandos en ${prefix}`, type: "LISTENING" }],
+            activities: [{ name: `comandos en ${config.prefix}`, type: "LISTENING" }],
             status: "online",
         });
 
         cliente.roles = new Discord.Collection();
-        let roles = cliente.guilds.cache.get(server).roles.cache;
+        let roles = cliente.guilds.cache.get(config.server).roles.cache;
         for (let rol of roles) {
             cliente.roles.set(rol[1].name, rol[0]);
         }
 
         cliente.reacciones = new Discord.Collection();
-        let materiasdb = new megadb.crearDB(db);
+        let materiasdb = new megadb.crearDB(config.db);
         let materias = await materiasdb.obtener("materias");
         for (let materia of materias) {
             cliente.reacciones.set(materia.emoji, materia.rol);
         }
-		let date = new Date();
+		if (true){
+            let date = new Date();
 		enviarMensaje({
 			cliente: cliente,
-			canal: canallogs,
-			server: server,
-			mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(
-				date
-			)}`,
+			canal: config.canallogs,
+			server: config.server,
+			mensaje: `Conectado: ${formatearFecha(date)} ${formatearHora(date)}`,
 		});
+        }
         activo = true;
         console.log("Ya estamos conectado a discord");
         fs.appendFile(
@@ -89,7 +80,7 @@ cliente.on("messageCreate", async (mensaje) => {
             return;
         }
         let contenido = mensaje.content;
-        if (contenido.startsWith(prefix)) {
+        if (contenido.startsWith(config.prefix)) {
             fs.appendFile(
                 "historialComandos.txt",
                 `\n${new Date().toLocaleString()} Quien: ${
@@ -100,7 +91,7 @@ cliente.on("messageCreate", async (mensaje) => {
                 }
             );
             //extraer los argumentos
-            let argumentos = contenido.slice(prefix.length).trim().split(" ");
+            let argumentos = contenido.slice(config.prefix.length).trim().split(" ");
             let borrable = mensaje.channel.type === "dm" ? true : false;
             let cual = argumentos.shift().toLowerCase();
 
@@ -111,7 +102,7 @@ cliente.on("messageCreate", async (mensaje) => {
                 }
                 mensaje.channel
                     .send(`<@${mensaje.author.id}> No era un comando :face_with_monocle:
-            \nUsa el comando ${prefix}ayuda para ver los comandos disponibles`);
+            \nUsa el comando ${config.prefix}ayuda para ver los comandos disponibles`);
                 return;
             }
 
@@ -162,10 +153,10 @@ Esta es la forma de usar el comando:\n ${comando.ejemplo}`);
 cliente.on("messageReactionAdd", async (reaccion, usuario) => {
     if (usuario.bot) return;
     try {
-        if (reaccion.message.id === mensajereaccion) {
+        if (reaccion.message.id === config.mensajereaccion) {
             var emoji = reaccion._emoji.name;
             var quien = cliente.guilds.cache
-                .get(server)
+                .get(config.server)
                 .members.cache.get(usuario.id);
             var rol = cliente.reacciones.get(emoji);
             quien.roles.add(cliente.roles.get(rol));
@@ -184,10 +175,10 @@ cliente.on("messageReactionAdd", async (reaccion, usuario) => {
 cliente.on("messageReactionRemove", async (reaccion, usuario) => {
     if (usuario.bot) return;
     try {
-        if (reaccion.message.id === mensajereaccion) {
+        if (reaccion.message.id === config.mensajereaccion) {
             var emoji = reaccion._emoji.name;
             var quien = cliente.guilds.cache
-                .get(server)
+                .get(config.server)
                 .members.cache.get(usuario.id);
             var rol = cliente.reacciones.get(emoji);
             quien.roles.remove(cliente.roles.get(rol));
@@ -213,25 +204,33 @@ cron.schedule("0 10 * * 7", async (hora) => {
         const recordatorios = await conexion.getRecordatoriosSemanales();
         if (recordatorios.length > 0) {
             var cual = "";
-            var mensaje = `**Despierten mis <@&${sobreviviente}>**\nEstos son los recordatorios para la semana\n`;
+            var mensaje = `**<@&${config.sobreviviente}>**\nEstos son los recordatorios para la semana\n`;
             for (const recordatorio of recordatorios) {
                 if (cual !== recordatorio.materia) {
                     cual = recordatorio.materia;
-                    mensaje += `\nLos recordatorios para **${cual}** son los siguientes`;
+                    mensaje += `\n\nLos recordatorios para **${cual}** son los siguientes`;
                 }
                 mensaje += `\n\t**Actividad**: ${recordatorio.actividad}`;
                 mensaje += `\n\t**Fecha**: ${formatearFecha(recordatorio.fecha)}`;
                 if (recordatorio.mensaje)
                     mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
-                mensaje += `\n\n`;
+                mensaje += `\n`;
             }
             enviarMensaje({
                 cliente: cliente,
-                server: server,
-                canal: canalrecordatorios,
+                server: config.server,
+                canal: config.canalrecordatorios,
                 mensaje: mensaje
             });
             console.log(`Recordatorios semanales enviados ${hora.toLocaleString()}`);
+        }
+        else {
+            enviarMensaje({
+                cliente: cliente,
+                server: config.server,
+                canal: config.canalrecordatorios,
+                mensaje: "No hay actividades para esta semana"
+            })
         }
     } catch (error) {
         enviarLog({
@@ -243,7 +242,7 @@ cron.schedule("0 10 * * 7", async (hora) => {
 });
 
 //job ver si hay evento diario 
-cron.schedule("0 14 * * *", async (hora) => {
+cron.schedule("*/1 * * * *", async (hora) => {
     if(!activo) return;
     try {
         const conexion = new sql();
@@ -258,7 +257,7 @@ cron.schedule("0 14 * * *", async (hora) => {
                     if (cual !== "") {
                         enviarMensaje({
                             cliente: cliente,
-                            server: server,
+                            server: config.server,
                             canal: id,
                             mensaje: mensaje
                         });
@@ -277,13 +276,13 @@ cron.schedule("0 14 * * *", async (hora) => {
                 if (recordatorio.mensaje)
                     mensaje += `\n\t**Nota**: ${recordatorio.mensaje}`;
                 mensaje += `\n\n`;
+                enviarMensaje({
+                    cliente: cliente,
+                    server: config.server,
+                    canal: id,
+                    mensaje: mensaje
+                });
             }
-            enviarMensaje({
-                cliente: cliente,
-                server: server,
-                canal: id,
-                mensaje: mensaje
-            });
             console.log(`Recordatorios diarios enviados ${hora.toLocaleString()}`);
         }
     } catch (error) {
@@ -295,4 +294,4 @@ cron.schedule("0 14 * * *", async (hora) => {
     };
 });
 
-cliente.login(token);
+cliente.login(config.token);
