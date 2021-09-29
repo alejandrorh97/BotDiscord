@@ -3,7 +3,7 @@
     "append": true,
     "watch": true,
     "script": "index.js",
-    "sourceDir": "/home/alejandrorrh97/agentej",
+    "sourceDir": "/home/alejandrorrh97/BotDiscord",
     "logFile": "/home/alejandrorrh97/logs/forever.log",
     "outFile": "/home/alejandrorrh97/logs/out.log",
     "errFile": "/home/alejandrorrh97/logs/error.log"
