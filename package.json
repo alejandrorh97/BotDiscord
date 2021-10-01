@@ -27,9 +27,11 @@
     "homepage": "https://github.com/alejandrorh97/BotDiscord#readme",
     "dependencies": {
         "discord.js": "^13.1.0",
+        "docxtemplater": "^3.25.4",
         "mariadb": "^2.5.4",
         "megadb": "^3.4.0",
-        "node-cron": "^3.0.0"
+        "node-cron": "^3.0.0",
+        "pizzip": "^3.1.1"
     },
     "devDependencies": {
         "nodemon": "^2.0.12"
