@@ -24,3 +24,4 @@ Personal Project to manage a discord server
 - Armando Osorio [GitHub](https://github.com/OC18018)
 
 ### Made in El Salvador 🇸🇻
+ 
