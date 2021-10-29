@@ -45,7 +45,7 @@ cliente.on("ready", async () => {
         for (let materia of materias) {
             cliente.reacciones.set(materia.emoji, materia.rol);
         }
-		if (false){
+		if (true){
             let date = new Date();
 		enviarMensaje({
 			cliente: cliente,
