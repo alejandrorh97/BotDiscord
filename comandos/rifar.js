@@ -49,18 +49,21 @@ module.exports = {
             }
             var total = cuantos * grupos;
     
+            const tiempo = 300000;
             var respuesta = enviarRespuesta(
                 mensaje,
-                `Ingresa ${total} nombres que formaran los grupos, si faltan usa el comodin "no hay mas" para empezar a rifar`
+                `Ingresa ${total} nombres que formaran los grupos, si faltan usa el comodin "no hay mas" para empezar a rifar y tienes ${tiempo/60000} minutos para completar el llenado de nombres`
             );
     
             var filter = (m) => {
                 return m.author.id === mensaje.author.id;
             };
+            
+            console.log(tiempo);
             var colector = new MessageCollector(mensaje.channel, {
                 filter: filter,
                 max: total,
-                time: 1000 * (15 * cuantos),
+                time: tiempo,
             });
     
             colector.on("collect", (msj) => {

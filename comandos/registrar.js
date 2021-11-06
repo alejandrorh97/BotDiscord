@@ -1,4 +1,4 @@
-const {enviarRespuesta, enviarLog, enviarMensaje} = require('../utils');
+const {enviarLog} = require('../utils');
 const megadb = require("megadb");
 
 module.exports = {
@@ -35,6 +35,12 @@ module.exports = {
             }
             nombre = nombre.join(' ');
             apellido = apellido.join(' ');
+
+            if(nombre.length === 0 || apellido.length === 0 || carnet === 0){
+                mensaje.channel.send(`<@${mensaje.author.id}> da tus datos bien >:v`);
+                return;
+            }
+
             var sujetos = new megadb.crearDB('sujetos');
             sujetos.establecer(mensaje.author.id, {
                 nombre: nombre,
