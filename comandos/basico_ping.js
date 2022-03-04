@@ -5,7 +5,6 @@ module.exports = {
         discord: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Pong'),
-
         informacion: {
             admins: false,
             categoria: "Basico"
