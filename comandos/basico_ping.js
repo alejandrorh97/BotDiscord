@@ -7,10 +7,13 @@ module.exports = {
 		.setDescription('Pong'),
         informacion: {
             admins: false,
-            categoria: "Basico"
+            categoria: "Basico",
+            admins: true,
+            privado: false
         }
     },
-	async ejecutar(interaction) {
+	async ejecutar(interaction, datos) {
+        console.log(datos);
 		return interaction.reply('Pong!');
 	},
 };
