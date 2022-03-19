@@ -58,7 +58,7 @@ cliente.on('messageCreate', mensaje => {
 //responder a los comandos
 cliente.on("interactionCreate", (interaccion) => {
     if(interaccion.isCommand()){
-        const comando = cliente.comandos.get(interaccion.commandName);
+        const comando = cliente.comandos.get(interaccion.commandName.slice(config.prefix.length));
         if(comando.datos.informacion.admins){
             if(!interaccion.member.permissions.has("ADMINISTRATOR")){
                 interaccion.reply({content: "No tienes permisos para ejecutar este comando :ninja:", ephemeral: true})
